@@ -1,0 +1,249 @@
+# Reel edit system v3
+
+The editing spec this repo implements — the system Mel Greene uses for her
+own Reels, published as a working template. An AI agent (or a human) reads
+this file before touching a reel composition; every rule here is enforced by
+the kit in `src/kit/`.
+
+This is the consolidated spec as approved on 27 Aug 2026 after two
+build-review rounds against a reference creator's edit. The evolution is in
+the changelog at the bottom; the body describes only the current style.
+Reference implementation: `src/example/`.
+
+Everything is expressed at 1080x1920, 30fps. Frame counts are frames.
+
+**The one-line philosophy:** the speaker is never off screen, every cut lands together
+with an overlay change and a visible reframe, captions whisper, emphasis
+shouts, and nothing animates that isn't landing.
+
+---
+
+## 1. Tokens  (`src/kit/reelTokens.ts`)
+
+```ts
+navy:      '#1B2A4A'  // grounds only (covers, cards if ever revived); never over footage
+parchment: '#F5EFE8'  // all primary type over footage
+blush:     '#C4A0A0'  // big-type accent: payoff words, labels
+rose:      '#E89090'  // caption-tint accent ONLY — see captions
+white:     '#FFFFFF'  // asides only
+```
+
+Navy never carries type over footage. Blush is invisible at caption size, and
+a dark rose dies over dark clothing — that is why `rose` exists: blush's hue
+at near-parchment luminance, saturation doing the separating. Tested over both
+grounds; a parchment glow-shadow was tested for the dark case and rejected as
+mush. Do not re-litigate these.
+
+### Faces  (`src/kit/fonts.ts`, self-hosted in public/fonts/)
+
+| Role | Face | Weight |
+|---|---|---|
+| Display + captions | Instrument Sans | 500 / 600 / 700 |
+| Labels, ordinals | DM Mono | 500 |
+| Asides only | your own handwritten face | — |
+
+Instrument Sans and DM Mono are bundled (SIL OFL). The aside face is not —
+drop a licensed script font at `public/fonts/Aside.otf` (cursive fallback
+otherwise). Line-fitting is live `measureText` against the loaded faces
+(`src/kit/fit.ts`) — no static metrics tables.
+
+---
+
+## 2. Zones and platform safety
+
+```
+LEFT = 70   RIGHT = 150   SAFE_W = 860     // text lives in x 70–930
+```
+
+Instagram UI, measured from a real Reels-feed recording (1080x1920):
+top header y 90–230 (translucent), right action rail x 950–1060 / y 990–1620,
+bottom caption zone y 1620+. The recording card (§5) clears the rail and the
+bottom zone; its top edge sits under the translucent header, same as the
+reference creator's — accepted. TikTok's rail rides higher and may brush the
+card's bottom-right corner; only narrow the card if a real TikTok post shows a
+collision.
+
+| Element | Position |
+|---|---|
+| Hook title | top 190, centred in safe zone |
+| Recording card | x 28, y 150–770 |
+| Logo pops | y ~430, centred |
+| Memes | wall space, y ~380–520, never over the speaker's face |
+| Captions | 71% (y 1363) — under a card: y 804 |
+| Emphasis groups | display band y ~450–700, centred ± dx |
+
+---
+
+## 3. Footage  (`src/kit/Footage.tsx`, `cuts.ts`)
+
+One continuous take, cut hard. No crossfades, zoom ramps, or speed ramps.
+
+- **Real punch-ins**: tight 1.26–1.38, wide 1.0–1.1, alternating, cycled off a
+  metronome. Subtle reframes (1.1x) read as nothing — don't use them.
+- **Every cut coincides with something**: a recording card arriving/leaving, a
+  logo landing, an emphasis beat, a section turn. A cut into dead air is the
+  thing that reads as unfinished.
+- **While a recording card is up** the footage reframes DOWN so the face sits
+  fully below the card, still visible, still reacting: `dy 240, fy 60,
+  scale ≥ 1.22` (fy 60 makes the scale growth swallow the gap the translate
+  opens above). **The speaker is never off screen. Ever.**
+- Cut on the breath — pass marks in from the word timings, not a grid.
+
+---
+
+## 4. Text components  (`src/kit/kit.tsx`)
+
+### Hook — persistent top title
+Two-line headline (parchment, 700, ≤78px fitted) + parenthetical subhead
+(blush, 500, 44px), centred at top 190. Lands on a 3f fade, HOLDS ~14s while
+the speaker is already talking, captions running underneath. It never sits on top of a
+recording — the first card waits for it to leave. No numeral takeover.
+
+### Running captions — quiet
+- **1–3 word cells** split on natural sub-boundaries from whisper.cpp word
+  timings. Hard cut in/out. No motion, ever.
+- 52px / 600, parchment, centred, band at 71%. **Under a card: y 804** (the
+  gap between card bottom and the head).
+- The stressed word is tinted **rose**. Never scaled, never moved. Most cells
+  have none.
+- Captions run under the hook and the cards; they yield only to emphasis
+  groups and the CTA.
+- Ordinals stay stripped — the logo pop says the section once.
+
+### Emphasis groups — loud
+- The block is **centred as a composition**, stagger applied around centre:
+  setup −48, payoff 0, tail +84. Each group takes a `dx` nudge (±40–65,
+  varied across the video) so placement reads as chosen, not templated.
+- Payoff 150px/700 blush, setup/tail 66px/600 parchment; payoff 2.0–2.5x the
+  setup. One line per beat on a 3f fade; accumulate, hold, clear together.
+- 4–6 per video, on the sentences carrying the argument.
+- One face throughout — never split a spoken sentence across faces.
+
+### Logo pops — the section markers
+Brand mark + name, **centred** in the wall space (y ~430), landing with a
+6f back-eased scale pop and a `pop` SFX as the company is named; gone before
+that section's card arrives. Real marks only — from the brand's own assets if
+not already in `public/tool-logos/` — or a brand-colour wordmark when no mark
+is available. A wrong logo is worse than no logo.
+
+### Memes
+1–3 per video, from your own approved library in `public/memes/` (short
+looping mp4s; not bundled — source your own). Rounded 14, soft shadow, slight
+rotation, wall space only, **never over the speaker's face**, never
+simultaneous with an emphasis group. Keep a small approved library rather than
+grabbing per video.
+
+### Asides (Ugly Dave)
+A remark NOT in the spoken script, 1–2 per video max; if there's no genuine
+aside the face doesn't appear. **Types on** character-by-character
+(charDur ~1.4) with `typing.mp3` underneath spanning `asideTypeFrames()` — the
+hand-written mimic. Off-axis, rotated 2–4°, 54px, parchment. The typed-text
+ban applies to the sans faces only.
+
+---
+
+## 5. Screen recordings  (`src/kit/ScreenInsert.tsx`)
+
+A **rounded card floating in the top third** over her sharp footage:
+x 28, top 150, 1024 wide, 620 tall, radius 24, soft shadow. Hard cut in, with
+a `click`. No blur behind, no dim, no drift — the footage stays sharp and the
+speaker stays visible and reacting below (§3 handles the reframe).
+
+- Source mockups are 1080x1350; the card shows a crop window panned with
+  `cropY → cropY2` so the cursor stays in view. Verify crops against stills.
+- Trim first, `rate` second, never above 1.5. Anything with a running timer
+  on screen stays at 1.
+- Never full-height, never edge-to-edge, never covering the speaker.
+
+---
+
+## 6. Sound  (`src/kit/sfx.ts`)
+
+Four sounds in the whole system. Files are not bundled — drop your own into
+`public/sfx/` under these names. Treat the volumes as design decisions, tuned
+by ear against speech; judge any change by listening, not by meters.
+
+| Sound | Where | Volume |
+|---|---|---|
+| `whoosh` | the hook, once per reel | 0.37 |
+| `pop` | each emphasis payoff line, each logo pop | 0.40 |
+| `click` | each recording card landing | 0.43 |
+| `typing` | under each aside as it types on | 0.34 |
+
+Setup/tail lines land silently. No sound on plain footage cuts. Nothing
+per-word, no sparkle/ding/riser, no music bed baked in.
+
+---
+
+## 7. Banned
+
+- The speaker fully off screen, for any duration
+- Full-height or edge-to-edge screen recordings; recordings covering the speaker
+- Blur/dim behind a card; card drift; focus pulls
+- Full-frame chapter/opener/result cards; progress rails; wipe transitions
+- Crossfades, zoom ramps, speed ramps; reframes too subtle to read (< 1.2)
+- Word-by-word captions; caption motion of any kind; scaling a caption word
+- Caption groups over 3–4 words, or captions sitting on the face
+- Blush as a caption tint (invisible); dark tints (die on dark clothing)
+- Left-hugging emphasis blocks or logos; identical placement every time
+- Typed-on sans text (the script face types; that is its register)
+- Two faces inside one spoken sentence
+- Hooks that take over the frame, or sit on top of a recording
+- Unapproved SFX, per-word sounds, processed audio
+
+---
+
+## 8. Per-video prompt
+
+```
+Build the reel for [DATE] following REEL-SYSTEM.md.
+
+Footage:      public/[FILE].mp4, [N] frames, [N]s
+Captions:     whisper.cpp ggml-base.en -ml 1 -sow on this exact audio
+Screen recs:  [list, with the section each belongs to]
+
+sections: [N, with the company/tool each is about]   // drives logo pops
+premise:  [subject | null]
+
+Emphasis lines, verbatim from her script:
+  1. [setup] / [payoff]  around f[N]
+  2. ...
+
+Asides (not spoken):
+  1. [text] after f[N]     // or: none
+```
+
+**Before building**, the agent reports back: the logo list (marks found vs
+wordmark fallbacks), 1–3 proposed meme beats — the line, the emotion, a named
+meme from `public/memes/` or a named suggestion to source — and any crop or
+timing judgment calls. The owner signs off, then the build runs. Everything
+else — cuts, caption cells, tints, sizes, placement — is decided by this
+file, not the prompt.
+
+---
+
+## 9. Kit map
+
+| File | Contents |
+|---|---|
+| `src/kit/reelTokens.ts` | palette, faces, zones, type shadow |
+| `src/kit/fonts.ts` | FontFace loading (bundled OFL faces + your aside face) |
+| `src/kit/kit.tsx` | Hook, GroupCaptions, EmphasisGroup, LogoPop, MemePop, Aside, Sfx |
+| `src/kit/ScreenInsert.tsx` | the recording card |
+| `src/kit/Footage.tsx` + `cuts.ts` | the cut take, reframe schedule, dy |
+| `src/kit/fit.ts` | live text measurement / fitting |
+| `src/kit/sfx.ts` | the four sound placements |
+| `src/example/` | a complete worked example of the data schema + composition |
+
+---
+
+## 10. Changelog
+
+- **26 Aug 2026** — v2 spec authored (chapter cards, full-bleed recordings,
+  one-SFX rule). First build and review: transitions added, cards lengthened,
+  sound restored to text. (All later superseded.)
+- **27 Aug 2026** — Reference-creator study. Cards, rail and wipes dropped;
+  recordings became framed cards in the top third with the speaker reframed
+  down; quiet 1–3 word captions + loud centred emphasis; persistent hook;
+  logo pops; memes; typed asides restored; `rose` tint added and brightened
+  to `#E89090`. Approved 27 Aug — this document.

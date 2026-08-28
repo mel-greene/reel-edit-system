@@ -1,0 +1,13 @@
+node_modules/
+out/
+.DS_Store
+
+# Bring-your-own assets — never commit licensed material
+public/footage.mp4
+public/sfx/*
+public/memes/*
+public/logos/*
+public/fonts/Aside.otf
+!public/sfx/.gitkeep
+!public/memes/.gitkeep
+!public/logos/.gitkeep
