@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// The person layer — Mel, cut out of her own footage.  §10 amendment,
+// The person layer — the speaker, cut out of the footage.  §10 amendment,
 // 29 Aug 2026, from the second reference-creator study.
 //
 // The reference's collage, graphics and big emphasis words tuck BEHIND her
