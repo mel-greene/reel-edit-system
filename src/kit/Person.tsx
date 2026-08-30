@@ -1,8 +1,8 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// The person layer — the speaker, cut out of the footage.  §10 amendment,
+// The person layer — Mel, cut out of her own footage.  §10 amendment,
 // 29 Aug 2026, from the second reference-creator study.
 //
-// The reference's collage, graphics and big emphasis words tuck BEHIND the speaker
+// The reference's collage, graphics and big emphasis words tuck BEHIND her
 // head and shoulders. That one trick is most of what reads as "produced":
 // the overlay stops being a sticker on top of a webcam frame and becomes a
 // set she is standing in front of.
@@ -15,7 +15,7 @@
 // Layer order in the composition:
 //
 //   <Footage/>                 the take, cut and reframed
-//   …behind-her overlays…      collage, emphasis words that tuck
+//   …behind overlays…      collage, emphasis words that tuck
 //   <PersonLayer/>             the speaker, matted, SAME cuts — pixel-aligned
 //   …front overlays…           captions, cards, logos, memes
 //
@@ -27,29 +27,38 @@ import {AbsoluteFill, OffthreadVideo, Sequence, staticFile, useCurrentFrame} fro
 import {Cut, cutAt} from './cuts';
 import type {Range} from './kit';
 
+/** A behind-window, optionally clipped to the screen region the behind-layer
+ *  overlay occupies (plus margin). Clipping matters: wherever the matte covers
+ *  footage with no overlay underneath, any soft-edge mismatch on fast-moving
+ *  limbs reads as a halo — so only composite her where the tuck can happen. */
+export type BehindWindow = Range & {
+	clip?: {x: number; y: number; w: number; h: number};
+};
+
 export const PersonLayer: React.FC<{
 	/** The matte, e.g. `0824-person.mov`. Same timeline as the footage unless
 	 *  it was matted with --start; then set `offset` to that start in frames. */
 	src: string;
 	cuts: Cut[];
-	windows: Range[];
+	windows: BehindWindow[];
 	offset?: number;
 }> = ({src, cuts, windows, offset = 0}) => (
 	<>
 		{windows.map((w) => (
 			<Sequence key={`${w.s}-${w.e}`} from={w.s} durationInFrames={w.e - w.s} layout="none">
-				<Matted src={src} cuts={cuts} reelStart={w.s} offset={offset} />
+				<Matted src={src} cuts={cuts} reelStart={w.s} offset={offset} clip={w.clip} />
 			</Sequence>
 		))}
 	</>
 );
 
-const Matted: React.FC<{src: string; cuts: Cut[]; reelStart: number; offset: number}> = ({
-	src,
-	cuts,
-	reelStart,
-	offset,
-}) => {
+const Matted: React.FC<{
+	src: string;
+	cuts: Cut[];
+	reelStart: number;
+	offset: number;
+	clip?: {x: number; y: number; w: number; h: number};
+}> = ({src, cuts, reelStart, offset, clip}) => {
 	const local = useCurrentFrame();
 	const c = cutAt(cuts, reelStart + local);
 	const dy = c?.dy ?? 0;
@@ -57,7 +66,15 @@ const Matted: React.FC<{src: string; cuts: Cut[]; reelStart: number; offset: num
 	// Identical crop math to Footage.tsx — the speaker must not shift by a pixel when
 	// the matte is present.
 	return (
-		<AbsoluteFill style={{overflow: 'hidden', pointerEvents: 'none'}}>
+		<AbsoluteFill
+			style={{
+				overflow: 'hidden',
+				pointerEvents: 'none',
+				clipPath: clip
+					? `inset(${clip.y}px ${1080 - clip.x - clip.w}px ${1920 - clip.y - clip.h}px ${clip.x}px)`
+					: undefined,
+			}}
+		>
 			<OffthreadVideo
 				src={staticFile(src)}
 				transparent
