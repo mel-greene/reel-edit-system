@@ -59,6 +59,12 @@ export type Hook = {
 	subhead?: string;
 	start: number;
 	end: number;
+	/** 29 Aug study: the reference tints ONE headline line — the payoff line —
+	 *  in the accent. Index into `headline`; rose carries it over footage. */
+	accentLine?: number;
+	/** Per-line max sizes. The reference steps them 84 / 66 / 76 so the three
+	 *  lines read as one lockup, not three rows of the same thing. */
+	sizes?: number[];
 };
 
 export const HookTitle: React.FC<{hook: Hook; shadow?: string}> = ({
@@ -93,10 +99,14 @@ export const HookTitle: React.FC<{hook: Hook; shadow?: string}> = ({
 					textShadow: shadow,
 				}}
 			>
-				{hook.headline.map((line) => (
+				{hook.headline.map((line, i) => (
 					<div
 						key={line}
-						style={{fontSize: fitSans(line, 78, SAFE_W, 700, -0.03), whiteSpace: 'nowrap'}}
+						style={{
+							fontSize: fitSans(line, hook.sizes?.[i] ?? 78, SAFE_W, 700, -0.03),
+							whiteSpace: 'nowrap',
+							color: i === hook.accentLine ? REEL.rose : undefined,
+						}}
 					>
 						{line}
 					</div>
@@ -142,10 +152,15 @@ export const GroupCaptions: React.FC<{
 	shadow?: string;
 	size?: number;
 	/** Move the band for a stretch — under an overlay card the caption sits
-	 *  between the card's bottom edge and her head, the reference creator's
-	 *  placement, instead of on her face. First matching range wins. */
+	 *  between the card's bottom edge and the speaker's head, the reference creator's
+	 *  placement, instead of on the face. First matching range wins. */
 	tops?: {s: number; e: number; top: number | string}[];
-}> = ({groups, top = BAND.caption, suppress = [], shadow, size = 52, tops = []}) => {
+	/** 29 Aug study: over a light takeover the parchment caption vanishes, so
+	 *  the ink switches for that stretch — navy on parchment ground, shadow
+	 *  off. (The reference uses outlined white; navy-on-parchment is the same
+	 *  move in this system.) First matching range wins. */
+	inks?: {s: number; e: number; color: string; tint?: string; shadow?: string}[];
+}> = ({groups, top = BAND.caption, suppress = [], shadow, size = 52, tops = [], inks = []}) => {
 	const frame = useCurrentFrame();
 	if (inAny(frame, suppress)) return null;
 
@@ -153,6 +168,7 @@ export const GroupCaptions: React.FC<{
 	if (!g) return null;
 
 	const band = tops.find((r) => frame >= r.s && frame < r.e)?.top ?? top;
+	const ink = inks.find((r) => frame >= r.s && frame < r.e);
 
 	return (
 		<div
@@ -167,15 +183,17 @@ export const GroupCaptions: React.FC<{
 				fontSize: size,
 				lineHeight: 1.08,
 				letterSpacing: '-0.02em',
-				color: REEL.parchment,
+				color: ink?.color ?? REEL.parchment,
 				textShadow:
-					shadow ?? '0 4px 18px rgba(0,0,0,0.55), 0 1px 3px rgba(0,0,0,0.7)',
+					ink?.shadow ??
+					shadow ??
+					'0 4px 18px rgba(0,0,0,0.55), 0 1px 3px rgba(0,0,0,0.7)',
 			}}
 		>
 			{g.words.map((w, i) => (
 				<React.Fragment key={`${w}-${i}`}>
 					{i > 0 ? ' ' : ''}
-					<span style={i === g.tint ? {color: REEL.rose} : undefined}>{w}</span>
+					<span style={i === g.tint ? {color: ink?.tint ?? REEL.rose} : undefined}>{w}</span>
 				</React.Fragment>
 			))}
 		</div>
@@ -262,6 +280,152 @@ export const EmphasisGroup: React.FC<{group: Emphasis; shadow?: string}> = ({
 				);
 			})}
 		</>
+	);
+};
+
+// ── Emphasis build (§4, 29 Aug study) ──────────────────────────────────────
+// The reference's loud register, refined: ONE visual line mixes a big accent
+// word with small companion words on the same baseline — "Find any", with
+// Find at display size and any at caption size — and each line lands on its
+// SPOKEN frame, accumulating around the speaker (top band + mid band), then clearing
+// together. Blush carries the big word, parchment the small ones, exactly
+// the §1 roles. Lines can sit in the behind-the-speaker stack (Person.tsx) so a big
+// word tucks behind the hair — use sparingly, one group per reel at most.
+export type BuildSegment = {
+	text: string;
+	/** Display-size blush. One per line reads best; two is the ceiling. */
+	big?: boolean;
+};
+
+export type BuildLine = {
+	segments: BuildSegment[];
+	/** Absolute frame this line lands — the word's spoken frame. */
+	at: number;
+	/** Left offset inside the safe zone. Vary per line; never centre-stack. */
+	x: number;
+	y: number;
+	bigSize?: number;
+	smallSize?: number;
+};
+
+export type EmphasisBuildGroup = {
+	start: number;
+	end: number;
+	lines: BuildLine[];
+};
+
+export const EmphasisBuild: React.FC<{group: EmphasisBuildGroup; shadow?: string}> = ({
+	group,
+	shadow = TYPE_SHADOW,
+}) => {
+	const frame = useCurrentFrame();
+	if (frame < group.start || frame >= group.end) return null;
+	const out = interpolate(frame, [group.end - 4, group.end], [1, 0], {
+		extrapolateLeft: 'clamp',
+		extrapolateRight: 'clamp',
+	});
+
+	return (
+		<>
+			{group.lines.map((l) => {
+				if (frame < l.at) return null;
+				const big = l.bigSize ?? 132;
+				const small = l.smallSize ?? 58;
+				return (
+					<div
+						key={`${l.at}-${l.y}`}
+						style={{
+							position: 'absolute',
+							left: LEFT + l.x,
+							top: l.y,
+							display: 'flex',
+							alignItems: 'baseline',
+							gap: 20,
+							whiteSpace: 'nowrap',
+							opacity: landed(frame, l.at) * out,
+						}}
+					>
+						{l.segments.map((s, i) => (
+							<span
+								key={`${s.text}-${i}`}
+								style={{
+									fontFamily: FACE.sans,
+									fontWeight: s.big ? 700 : 600,
+									fontSize: s.big ? big : small,
+									letterSpacing: s.big ? '-0.04em' : '-0.01em',
+									lineHeight: 1,
+									color: s.big ? REEL.blush : REEL.parchment,
+									textShadow: shadow,
+								}}
+							>
+								{s.text}
+							</span>
+						))}
+					</div>
+				);
+			})}
+		</>
+	);
+};
+
+// ── CTA line (§4, 29 Aug study) ────────────────────────────────────────────
+// "comment BLUEPRINT" — a rose line at the top of the frame that lands on a
+// 3f fade and then a single light sweep crosses it once, the reference's
+// glint. No type-on (§7: the script face types, sans does not). Pair it with
+// a FloatingCard of the actual deliverable underneath, and hold both.
+export type Cta = {
+	text: string;
+	start: number;
+	end: number;
+	y?: number;
+	size?: number;
+};
+
+export const CtaLine: React.FC<{cta: Cta; shadow?: string}> = ({cta, shadow = TYPE_SHADOW}) => {
+	const frame = useCurrentFrame();
+	if (frame < cta.start || frame >= cta.end) return null;
+	const size = fitSans(cta.text, cta.size ?? 60, SAFE_W, 700, -0.02);
+	const w = measure(cta.text, size, FACE.sans, 700, -0.02);
+	// One glint sweep, frames 4–18 after landing, then never again.
+	const sweep = interpolate(frame - cta.start, [4, 18], [-0.2, 1.2], {
+		extrapolateLeft: 'clamp',
+		extrapolateRight: 'clamp',
+	});
+	const glintOn = frame - cta.start >= 4 && frame - cta.start <= 18;
+
+	return (
+		<div
+			style={{
+				position: 'absolute',
+				left: LEFT + (SAFE_W - w) / 2,
+				top: cta.y ?? 190,
+				fontFamily: FACE.sans,
+				fontWeight: 700,
+				fontSize: size,
+				letterSpacing: '-0.02em',
+				whiteSpace: 'nowrap',
+				color: REEL.rose,
+				textShadow: shadow,
+				opacity: landed(frame, cta.start),
+			}}
+		>
+			{cta.text}
+			{glintOn ? (
+				<div
+					style={{
+						position: 'absolute',
+						left: sweep * w - 40,
+						top: -14,
+						width: 80,
+						height: size + 28,
+						background:
+							'radial-gradient(closest-side, rgba(255,255,255,0.85), rgba(255,255,255,0))',
+						mixBlendMode: 'screen',
+						pointerEvents: 'none',
+					}}
+				/>
+			) : null}
+		</div>
 	);
 };
 

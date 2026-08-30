@@ -9,9 +9,11 @@ agent reads before every build, and a component kit that enforces it. A new
 edit is a ~15-line brief; everything else — cuts, caption grouping, type
 sizes, placement, sound — is decided by the spec, not per video.
 
-**The one-line philosophy:** the speaker is never off screen, every cut lands
-together with an overlay change and a visible reframe, captions whisper,
-emphasis shouts, and nothing animates that isn't landing.
+**The one-line philosophy:** the speaker anchors every frame (off screen
+only inside a bounded product showcase), every cut lands together with an
+overlay change and a visible reframe, captions whisper, emphasis shouts,
+graphics live in the room with the speaker — not on top of them — and
+nothing animates that isn't landing.
 
 ## What's in the box
 

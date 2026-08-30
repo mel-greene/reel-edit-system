@@ -8,10 +8,14 @@ import {Cut, cutAt} from './cuts';
  * changes, the element never remounts, so a cut costs nothing and never seeks.
  *
  * `dy` pushes the footage down while a recording strip owns the top of the
- * frame; the gap it opens hides behind the strip, and the face sits fully
+ * frame; the gap it opens hides behind the strip, and her face sits fully
  * below it. Applied outside the scale so the number in the data is real px.
  */
-export const Footage: React.FC<{src: string; cuts: Cut[]}> = ({src, cuts}) => {
+export const Footage: React.FC<{src: string; cuts: Cut[]; startFrom?: number}> = ({
+	src,
+	cuts,
+	startFrom,
+}) => {
 	const frame = useCurrentFrame();
 	const c = cutAt(cuts, frame);
 	const dy = c?.dy ?? 0;
@@ -20,6 +24,7 @@ export const Footage: React.FC<{src: string; cuts: Cut[]}> = ({src, cuts}) => {
 		<AbsoluteFill style={{backgroundColor: '#000', overflow: 'hidden'}}>
 			<OffthreadVideo
 				src={staticFile(src)}
+				startFrom={startFrom}
 				style={{
 					width: '100%',
 					height: '100%',
