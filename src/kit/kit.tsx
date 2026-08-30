@@ -162,14 +162,17 @@ export const GroupCaptions: React.FC<{
 	 *  off. (The reference uses outlined white; navy-on-parchment is the same
 	 *  move in this system.) First matching range wins. */
 	inks?: {s: number; e: number; color: string; tint?: string; shadow?: string}[];
-}> = ({groups, top = BAND.caption, suppress = [], shadow, size = 52, tops = [], inks = []}) => {
+}> = ({groups, top = BAND.caption, suppress = [], shadow, size = 58, tops = [], inks = []}) => {
 	const frame = useCurrentFrame();
 	if (inAny(frame, suppress)) return null;
 
 	const g = groups.find((c) => frame >= c.s && frame < c.e);
 	if (!g) return null;
 
-	const band = tops.find((r) => frame >= r.s && frame < r.e)?.top ?? top;
+	// The band is decided ONCE per cell, from the cell's temporal midpoint —
+	// a cell that spans an insert boundary must not jump bands mid-life.
+	const mid = (g.s + g.e) / 2;
+	const band = tops.find((r) => mid >= r.s && mid < r.e)?.top ?? top;
 	const ink = inks.find((r) => frame >= r.s && frame < r.e);
 
 	return (
@@ -300,6 +303,10 @@ export type BuildSegment = {
 	text: string;
 	/** Display-size blush. One per line reads best; two is the ceiling. */
 	big?: boolean;
+	/** Absolute landing frame for THIS segment — pass the spoken frame. When
+	 *  omitted, segments auto-stagger 4f apart within their line, so words pop
+	 *  one at a time, matching the reference. */
+	at?: number;
 };
 
 export type BuildLine = {
@@ -345,27 +352,41 @@ export const EmphasisBuild: React.FC<{group: EmphasisBuildGroup; shadow?: string
 							top: l.y,
 							display: 'flex',
 							alignItems: 'baseline',
-							gap: 20,
+							gap: 14,
 							whiteSpace: 'nowrap',
-							opacity: landed(frame, l.at) * out,
+							opacity: out,
 						}}
 					>
-						{l.segments.map((s, i) => (
-							<span
-								key={`${s.text}-${i}`}
-								style={{
-									fontFamily: FACE.sans,
-									fontWeight: s.big ? 700 : 600,
-									fontSize: s.big ? big : small,
-									letterSpacing: s.big ? '-0.04em' : '-0.01em',
-									lineHeight: 1,
-									color: s.big ? REEL.blush : REEL.parchment,
-									textShadow: shadow,
-								}}
-							>
-								{s.text}
-							</span>
-						))}
+						{l.segments.map((s, i) => {
+							// Word-by-word: each segment lands on its own frame; big
+							// words get a small back-eased scale pop, small words fade.
+							const segAt = s.at ?? l.at + i * 4;
+							const t = interpolate(frame - segAt, [0, 6], [0, 1], {
+								extrapolateLeft: 'clamp',
+								extrapolateRight: 'clamp',
+								easing: s.big ? Easing.out(Easing.back(1.6)) : Easing.out(Easing.cubic),
+							});
+							return (
+								<span
+									key={`${s.text}-${i}`}
+									style={{
+										fontFamily: FACE.sans,
+										fontWeight: s.big ? 700 : 600,
+										fontSize: s.big ? big : small,
+										letterSpacing: s.big ? '-0.04em' : '-0.01em',
+										lineHeight: 1,
+										color: s.big ? REEL.blush : REEL.parchment,
+										textShadow: shadow,
+										display: 'inline-block',
+										opacity: Math.min(t * 2, 1),
+										transform: s.big ? `scale(${0.8 + t * 0.2})` : undefined,
+										transformOrigin: 'left bottom',
+									}}
+								>
+									{s.text}
+								</span>
+							);
+						})}
 					</div>
 				);
 			})}

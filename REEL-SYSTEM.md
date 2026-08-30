@@ -140,8 +140,10 @@ the CTA.
 ### Running captions — quiet
 - **1–3 word cells** split on natural sub-boundaries from whisper.cpp word
   timings. Hard cut in/out. No motion, ever.
-- 52px / 600, parchment, centred, band at 71%. **Under a card: y 804** (the
-  gap between card bottom and the head).
+- 58px / 600 (raised from 52 after review), parchment, centred, band at 71%.
+  **Under a card: y 804** (the gap between card bottom and the head). The
+  band is decided once per cell from its temporal midpoint — a cell spanning
+  an insert boundary never jumps bands mid-life.
 - The stressed word is tinted **rose**. Never scaled, never moved. Most cells
   have none.
 - Captions run under the hook and the cards; they yield only to emphasis
@@ -162,10 +164,15 @@ For a spoken LIST (Research… Find… Organize… Create…), the block form ab
 is wrong — the reference lands each item AS IT IS SPOKEN. One visual line
 mixes a big blush word (700, ~132px) with small parchment companions (600,
 ~58px) on a shared baseline — "**Find** any" — each line landing on its
-spoken frame with a `pop` on the big word only. Verb groups REPLACE each
-other (Research clears before Find lands), companion lines can drop into the
-caption band. Position each group's lines at varied x so nothing stacks
-centred. One build sequence per reel; it may sit behind the speaker (§2b).
+spoken frame with a `pop` on the big word only. WORDS land one at a time
+(segments auto-stagger 4f, or carry their spoken frame), and a big word
+lands with a small back-eased scale pop — the one sanctioned text motion.
+The group is ONE compact cluster: companions nested against the big word,
+next line's top ≈ the previous line's size below it. Verb groups REPLACE
+each other (Research clears before Find lands), companion lines can drop
+into the caption band. Position each group's lines at varied x so nothing
+stacks centred. One build sequence per reel may sit behind the speaker
+(§2b).
 
 ### CTA line (v4, `CtaLine`)
 "comment "SYSTEM"" — rose, 700, ~60px, centred at top 150–190, landing on a
