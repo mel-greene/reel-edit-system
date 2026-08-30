@@ -119,9 +119,11 @@ request.qualityLevel = fast ? .balanced : .accurate
 request.outputPixelFormat = kCVPixelFormatType_OneComponent8
 let fgRequest = VNGenerateForegroundInstanceMaskRequest()
 
-// smoothstep(0.25, 0.65) as a byte LUT: interior → opaque, edge stays soft.
+// smoothstep(0.30, 0.70) as a byte LUT: interior → opaque, edge stays soft.
+// Paired with the 5x5 erode below, the soft ramp sits INSIDE the silhouette,
+// so no pale halo appears where the matte overlaps identical background.
 let lut: [UInt8] = (0...255).map { v in
-	let t = max(0, min(1, (Double(v) / 255 - 0.25) / 0.40))
+	let t = max(0, min(1, (Double(v) / 255 - 0.30) / 0.40))
 	return UInt8((t * t * (3 - 2 * t)) * 255)
 }
 
@@ -180,6 +182,16 @@ while reader.status == .reading {
 		scaleInto(&planeB, mask: fgMask)
 		for i in 0..<(W * H) { planeA[i] = max(planeA[i], planeB[i]) }
 	}
+
+	// Erode the union mask ~2px so the feathered edge falls inside the figure.
+	planeA.withUnsafeMutableBytes { p in
+		var buf = vImage_Buffer(data: p.baseAddress, height: vImagePixelCount(H), width: vImagePixelCount(W), rowBytes: W)
+		planeB.withUnsafeMutableBytes { q in
+			var dst = vImage_Buffer(data: q.baseAddress, height: vImagePixelCount(H), width: vImagePixelCount(W), rowBytes: W)
+			vImageMin_Planar8(&buf, &dst, nil, 0, 0, 5, 5, vImage_Flags(kvImageNoFlags))
+		}
+	}
+	swap(&planeA, &planeB)
 
 	var outBuffer: CVPixelBuffer?
 	CVPixelBufferPoolCreatePixelBuffer(nil, adaptor.pixelBufferPool!, &outBuffer)

@@ -140,8 +140,10 @@ export type CaptionGroup = {
 	words: string[];
 	s: number;
 	e: number;
-	/** Index into `words` of the one stressed word. Most groups have none. */
-	tint?: number;
+	/** Index(es) into `words` of the stressed word or PHRASE — a stressed
+	 *  phrase tints whole ("on your flight"), not just one word. Most groups
+	 *  have none. */
+	tint?: number | number[];
 };
 
 export const GroupCaptions: React.FC<{
@@ -190,12 +192,15 @@ export const GroupCaptions: React.FC<{
 					'0 4px 18px rgba(0,0,0,0.55), 0 1px 3px rgba(0,0,0,0.7)',
 			}}
 		>
-			{g.words.map((w, i) => (
-				<React.Fragment key={`${w}-${i}`}>
-					{i > 0 ? ' ' : ''}
-					<span style={i === g.tint ? {color: ink?.tint ?? REEL.rose} : undefined}>{w}</span>
-				</React.Fragment>
-			))}
+			{g.words.map((w, i) => {
+				const stressed = Array.isArray(g.tint) ? g.tint.includes(i) : i === g.tint;
+				return (
+					<React.Fragment key={`${w}-${i}`}>
+						{i > 0 ? ' ' : ''}
+						<span style={stressed ? {color: ink?.tint ?? REEL.rose} : undefined}>{w}</span>
+					</React.Fragment>
+				);
+			})}
 		</div>
 	);
 };
@@ -490,6 +495,9 @@ export const Aside: React.FC<{note: AsideNote; shadow?: string}> = ({
 export type LogoChip = {
 	/** staticFile path of the mark. Omit for a wordmark-only chip. */
 	icon?: string;
+	/** A React-rendered mark (e.g. a component icon) when no image asset
+	 *  exists. Takes precedence over `icon`. */
+	iconNode?: React.ReactNode;
 	/** Omit when the icon file is already a full lockup (Canva, BetterHelp). */
 	label?: string;
 	/** Wordmark colour when there is no icon; label is parchment otherwise. */
@@ -535,7 +543,9 @@ export const LogoPop: React.FC<{chip: LogoChip; shadow?: string}> = ({
 				transformOrigin: 'center',
 			}}
 		>
-			{chip.icon ? (
+			{chip.iconNode ? (
+				<div style={{filter: 'drop-shadow(0 4px 14px rgba(0,0,0,0.45))'}}>{chip.iconNode}</div>
+			) : chip.icon ? (
 				<Img
 					src={staticFile(chip.icon)}
 					style={{
@@ -551,7 +561,7 @@ export const LogoPop: React.FC<{chip: LogoChip; shadow?: string}> = ({
 						fontWeight: 700,
 						fontSize: 62,
 						letterSpacing: '-0.02em',
-						color: chip.icon ? REEL.parchment : (chip.color ?? REEL.parchment),
+						color: chip.icon || chip.iconNode ? REEL.parchment : (chip.color ?? REEL.parchment),
 						textShadow: shadow,
 						whiteSpace: 'nowrap',
 					}}
