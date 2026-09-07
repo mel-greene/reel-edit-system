@@ -126,7 +126,12 @@ export const HookTitle: React.FC<{hook: Hook; shadow?: string}> = ({
 				style={{
 					position: 'absolute',
 					left: LEFT,
-					top: 190,
+					// Instagram's top icon row (back arrow, camera, search) occupies canvas
+					// y ~187-231: the feed fills the screen height, so canvas y maps ~1:1.
+					// A hook at 190 prints underneath those icons — on a live post the
+					// camera icon landed straight through a headline word. 300 clears the
+					// row plus padding for a taller status bar.
+					top: 300,
 					width: SAFE_W,
 					textAlign: cover ? 'left' : 'center',
 					opacity: alpha,
@@ -482,7 +487,7 @@ export const CtaLine: React.FC<{cta: Cta; shadow?: string}> = ({cta, shadow = TY
 			style={{
 				position: 'absolute',
 				left: LEFT + (SAFE_W - w) / 2,
-				top: cta.y ?? 190,
+				top: cta.y ?? 300, // clears Instagram's top icon row — see HookTitle
 				fontFamily: FACE.sans,
 				fontWeight: 700,
 				fontSize: size,
@@ -683,6 +688,11 @@ export type CtaCardSpec = {
 	start: number;
 	end: number;
 	top?: number;
+	/** Left by default, matching the cover lockup. Centre reads better on a
+	 *  short, blocky card; a long card reads better left. This is a per-video
+	 *  call, not a rule. The container spans LEFT..LEFT+SAFE_W, so 'centre'
+	 *  centres on the SAFE-ZONE axis (x 500), never the frame centre (540). */
+	align?: 'left' | 'centre';
 };
 
 export const CtaCard: React.FC<{cta: CtaCardSpec}> = ({cta}) => {
@@ -708,7 +718,8 @@ export const CtaCard: React.FC<{cta: CtaCardSpec}> = ({cta}) => {
 				style={{
 					position: 'absolute',
 					left: LEFT,
-					top: cta.top ?? 250,
+					top: cta.top ?? 300, // clears Instagram's top icon row
+					textAlign: cta.align === 'centre' ? 'center' : 'left',
 					width: SAFE_W,
 					opacity: alpha,
 					fontFamily: FACE.sans,

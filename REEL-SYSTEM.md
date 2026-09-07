@@ -60,17 +60,30 @@ Instrument Sans. Line-fitting is live `measureText` against the loaded faces
 LEFT = 70   RIGHT = 150   SAFE_W = 860     // text lives in x 70–930
 ```
 
-Instagram UI, measured from a real Reels-feed recording (1080x1920):
-top header y 90–230 (translucent), right action rail x 950–1060 / y 990–1620,
-bottom caption zone y 1620+. The recording card (§5) clears the rail and the
-bottom zone; its top edge sits under the translucent header, same as the
-reference creator's — accepted. TikTok's rail rides higher and may brush the
-card's bottom-right corner; only narrow the card if a real TikTok post shows a
-collision.
+Instagram UI, measured from a live post in the feed. The video FILLS THE SCREEN
+HEIGHT and Instagram crops roughly **49px off each side**, so canvas y maps ~1:1
+to the screen and canvas x is inset by ~49.
+
+| Instagram element | Canvas |
+|---|---|
+| Top icon row (back arrow, camera, search) | **y 187–231**, x ~120–160 and ~810–975 |
+| Right action rail | x ~934–1000, y ~1088–1718 |
+| Handle + caption | y 1700+ |
+
+**Nothing may start above y 290.** An earlier version of this table put the hook
+at y 190, which is inside the icon row — on a live post Instagram's camera icon
+printed straight through a headline word, and the end card sat under the back
+arrow. The hook and the end card both start at **300**. The recording card (§5,
+top 150) still clears everything because it is a full-width surface with no type
+in its top rows.
+
+Side note on the ~49px side crop: text at `LEFT` (70) shows about 21px from the
+visible edge. Tight but not cut, so `LEFT` is unchanged — revisit if a post ever
+shows a clipped character.
 
 | Element | Position |
 |---|---|
-| Hook title | top 190, **left-aligned at `LEFT`** (cover lockup) |
+| Hook title | top **300**, **left-aligned at `LEFT`** (cover lockup) |
 | Recording card | x 28, y 150–770 |
 | Logo pops | y ~430, centred (left only when part of the hook lockup) |
 | Memes | wall space, y ~380–520, never over the speaker's face |
@@ -235,9 +248,13 @@ The deadline, one line               parchment, 500
 
 The offer NAME leads — a keyword alone tells the viewer nothing about what they
 are asking for — and **both mechanics ship on every promo**: the comment
-keyword AND the link in bio. **Centre on the SAFE-ZONE centre
-(x ≈ 500), not the frame centre (540)** — the safe zone is offset left to clear
-the action rail, and mixing the two skews the block 40px. One light-sweep glint
+keyword AND the link in bio. **Alignment is a per-card call, not a rule** — the best alignment shifts
+depending on the card. Left, matching the cover lockup, suits a long card; a
+short blocky card can centre. Set `align` on `CtaCardSpec`. When centring, the
+block centres on the **SAFE-ZONE centre (x ≈ 500), never the frame centre
+(540)** — the safe zone is offset left to clear the action rail, and mixing the
+two skews the block 40px. The card starts at **y 300**, clear of Instagram's top
+icons (§2). One light-sweep glint
 on the first line (frames 4–18, then never again); no type-on. Pair it with a
 `FloatingCard` of the actual deliverable in the wall space and hold both to the
 end. The card is the proof; the reference holds hers ~10s.
@@ -406,6 +423,12 @@ file, not the prompt.
 ---
 
 ## 10. Changelog
+
+- **Instagram safe area re-measured from a live post (§2).** The feed crops
+  ~49px off each side and maps canvas y ~1:1, and the top icon row occupies
+  y 187–231 — so a hook at 190 and an end card at 210–250 were printing under
+  Instagram's own chrome on every video. Both now start at **y 300**. End-card
+  alignment became a per-card `align` option rather than a fixed rule.
 
 - **26 Aug 2026** — v2 spec authored (chapter cards, full-bleed recordings,
   one-SFX rule). First build and review: transitions added, cards lengthened,
