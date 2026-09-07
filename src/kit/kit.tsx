@@ -48,15 +48,25 @@ export type Range = {s: number; e: number};
 const inAny = (frame: number, rs: Range[]) =>
 	rs.some((r) => frame >= r.s && frame < r.e);
 
-// ── Hook (§4, amended §10 27 Aug) ──────────────────────────────────────────
-// A persistent two-line title at the top of the frame, not a takeover moment.
-// It stays up while she is already talking and the captions run underneath it
-// — the reference creator holds hers ~10s into the video. Headline parchment,
-// parenthetical subhead blush.
+// ── Hook (§4, v5) ──────────────────────────────────────────────────────────
+// A persistent title at the top of the frame, not a takeover moment. It stays
+// up while the speaker is already talking and the captions run underneath it
+// — the reference creator holds hers ~10s into the video.
+//
+// v5: the hook IS the cover lockup. Pass `coverStyle` and it renders
+// left-aligned at the safe margin with the cover's scrim and three-layer
+// shadow, so the cover image and the first ten seconds of the reel are visibly
+// the same design. The older centred form is kept for existing reels.
 export type Hook = {
 	headline: string[];
-	/** Set in parentheses, the reference's aside register: "(it isn't close)". */
+	/** Wrapped in parentheses by default, an aside register: "(it isn't
+	 *  close)". Set `bareSubhead` when the subhead is a statement. */
 	subhead?: string;
+	bareSubhead?: boolean;
+	/** Cover treatment: left-aligned at the safe margin, the cover's
+	 *  three-layer shadow and scrim, subhead at cover scale (54px). Markedly
+	 *  more readable over footage than the centred small-subhead form. */
+	coverStyle?: boolean;
 	start: number;
 	end: number;
 	/** 29 Aug study: the reference tints ONE headline line — the payoff line —
@@ -67,66 +77,105 @@ export type Hook = {
 	sizes?: number[];
 };
 
+export const COVER_SHADOW =
+	'0 0 34px rgba(0,0,0,0.7), 0 6px 26px rgba(0,0,0,0.55), 0 2px 5px rgba(0,0,0,0.7)';
+
 export const HookTitle: React.FC<{hook: Hook; shadow?: string}> = ({
 	hook,
-	shadow = TYPE_SHADOW,
+	shadow,
 }) => {
 	const frame = useCurrentFrame();
 	if (frame < hook.start || frame >= hook.end) return null;
+	const cover = !!hook.coverStyle;
+	const ink = shadow ?? (cover ? COVER_SHADOW : TYPE_SHADOW);
 	const out = interpolate(frame, [hook.end - 4, hook.end], [1, 0], {
 		extrapolateLeft: 'clamp',
 		extrapolateRight: 'clamp',
 	});
+	const alpha = landed(frame, hook.start + 2) * out;
+	const sub = hook.subhead
+		? hook.bareSubhead
+			? hook.subhead
+			: `(${hook.subhead})`
+		: null;
 
 	return (
-		<div
-			style={{
-				position: 'absolute',
-				left: LEFT,
-				top: 190,
-				width: SAFE_W,
-				textAlign: 'center',
-				opacity: landed(frame, hook.start + 2) * out,
-			}}
-		>
-			<div
-				style={{
-					fontFamily: FACE.sans,
-					fontWeight: 700,
-					lineHeight: 1.04,
-					letterSpacing: '-0.03em',
-					color: REEL.parchment,
-					textShadow: shadow,
-				}}
-			>
-				{hook.headline.map((line, i) => (
-					<div
-						key={line}
-						style={{
-							fontSize: fitSans(line, hook.sizes?.[i] ?? 78, SAFE_W, 700, -0.03),
-							whiteSpace: 'nowrap',
-							color: i === hook.accentLine ? REEL.rose : undefined,
-						}}
-					>
-						{line}
-					</div>
-				))}
-			</div>
-			{hook.subhead ? (
+		<>
+			{cover ? (
 				<div
 					style={{
-						marginTop: 10,
+						position: 'absolute',
+						left: 0,
+						top: 0,
+						width: 1080,
+						height: 900,
+						opacity: alpha,
+						background:
+							'linear-gradient(180deg, rgba(0,0,0,0.56) 0%, rgba(0,0,0,0.42) 26%, rgba(0,0,0,0.26) 46%, rgba(0,0,0,0) 100%)',
+					}}
+				/>
+			) : null}
+			<div
+				style={{
+					position: 'absolute',
+					left: LEFT,
+					top: 190,
+					width: SAFE_W,
+					textAlign: cover ? 'left' : 'center',
+					opacity: alpha,
+				}}
+			>
+				<div
+					style={{
 						fontFamily: FACE.sans,
-						fontWeight: 500,
-						fontSize: fitSans(`(${hook.subhead})`, 44, SAFE_W, 500),
-						color: REEL.blush,
-						textShadow: shadow,
+						fontWeight: 700,
+						lineHeight: cover ? 0.95 : 1.04,
+						letterSpacing: cover ? '-0.04em' : '-0.03em',
+						color: REEL.parchment,
+						textShadow: ink,
 					}}
 				>
-					({hook.subhead})
+					{hook.headline.map((line, i) => (
+						<div
+							key={line}
+							style={{
+								fontSize: fitSans(
+									line,
+									hook.sizes?.[i] ?? (cover ? 132 : 78),
+									SAFE_W,
+									700,
+									cover ? -0.04 : -0.03,
+								),
+								whiteSpace: 'nowrap',
+								color: i === hook.accentLine ? REEL.rose : undefined,
+							}}
+						>
+							{line}
+						</div>
+					))}
 				</div>
-			) : null}
-		</div>
+				{sub ? (
+					<div
+						style={{
+							marginTop: cover ? 22 : 10,
+							fontFamily: FACE.sans,
+							fontWeight: cover ? 600 : 500,
+							lineHeight: cover ? 1.2 : undefined,
+							letterSpacing: cover ? '-0.01em' : undefined,
+							fontSize: fitSans(sub, cover ? 54 : 44, SAFE_W, cover ? 600 : 500),
+							// Blush disappears into a pale wall even under the scrim.
+							// Rose is the brighter pink already carrying the caption
+							// tints and the CTA. This applies to BOTH forms — leaving
+							// the centred form on blush shipped an invisible subhead.
+							color: REEL.rose,
+							textShadow: ink,
+						}}
+					>
+						{sub}
+					</div>
+				) : null}
+			</div>
+		</>
 	);
 };
 
@@ -509,7 +558,7 @@ export const Aside: React.FC<{note: AsideNote; shadow?: string}> = ({
 };
 
 // ── Logo pop (§10, 27 Aug) ─────────────────────────────────────────────────
-// A brand mark + name landing in the wall space as she names the company —
+// A brand mark + name landing in the wall space as the speaker names the company —
 // the section marker, taking over the role the v1 coral numerals and the v2
 // chapter cards used to play. One per section, holds ~3s, lands with a small
 // scale pop: the section marker is the one place a hard pop is motivated.
@@ -525,6 +574,9 @@ export type LogoChip = {
 	color?: string;
 	/** Icon height px; wide lockups set this and let width follow. */
 	iconH?: number;
+	/** v5: align the chip with the lockup. A centred mark under a
+	 *  left-aligned hook reads as a mistake. */
+	align?: 'center' | 'left';
 	y: number;
 	start: number;
 	end: number;
@@ -546,8 +598,8 @@ export const LogoPop: React.FC<{chip: LogoChip; shadow?: string}> = ({
 		extrapolateRight: 'clamp',
 	});
 
-	// A single chip on screen is CENTRED (review note) — left-hugging read as
-	// a mistake. The safe-zone wrapper centres whatever the chip contains.
+	// The chip follows the lockup: `align: 'left'` under a left-aligned
+	// (cover-style) hook, centred otherwise. Mixing the two reads as a mistake.
 	return (
 		<div
 			style={{
@@ -557,7 +609,7 @@ export const LogoPop: React.FC<{chip: LogoChip; shadow?: string}> = ({
 				width: SAFE_W,
 				display: 'flex',
 				alignItems: 'center',
-				justifyContent: 'center',
+				justifyContent: chip.align === 'left' ? 'flex-start' : 'center',
 				gap: 22,
 				opacity: Math.min(t * 2, 1) * out,
 				transform: `scale(${0.7 + t * 0.3})`,
@@ -595,7 +647,7 @@ export const LogoPop: React.FC<{chip: LogoChip; shadow?: string}> = ({
 };
 
 // ── Meme pop (§10, 27 Aug) ─────────────────────────────────────────────────
-// A looping reaction clip in the empty wall space, expressing what she is not
+// A looping reaction clip in the empty wall space, expressing what the speaker is not
 // saying out loud — the reference creator's Angela Lansbury move. 1–2 per
 // video, from your own approved library in public/memes/, never over the speaker's face.
 export type Meme = {

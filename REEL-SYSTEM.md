@@ -1,4 +1,4 @@
-# Reel edit system v4
+# Reel edit system v5
 
 The editing spec this repo implements — the system Mel Greene uses for her
 own Reels, published as a working template. An AI agent (or a human) reads
@@ -23,9 +23,9 @@ shouts, and nothing animates that isn't landing.
 ```ts
 navy:      '#1B2A4A'  // grounds only (covers, cards if ever revived); never over footage
 parchment: '#F5EFE8'  // all primary type over footage
-blush:     '#C4A0A0'  // big-type accent: payoff words, labels
-rose:      '#E89090'  // caption-tint accent ONLY — see captions
-white:     '#FFFFFF'  // asides only
+blush:     '#C4A0A0'  // BIG type only: cover numeral, emphasis payoffs, labels
+rose:      '#E89090'  // every accent at small size: caption phrases, subheads
+white:     '#FFFFFF'  // unused since the asides retired (v5)
 ```
 
 Navy never carries type over footage. Blush is invisible at caption size, and
@@ -34,17 +34,22 @@ at near-parchment luminance, saturation doing the separating. Tested over both
 grounds; a parchment glow-shadow was tested for the dark case and rejected as
 mush. Do not re-litigate these.
 
+**Blush over footage is for BIG type only** — the cover numeral and emphasis
+payoff words, where the mass carries it. At subhead size blush disappears into
+a pale wall even under the scrim; it shipped invisible once before this rule
+existed. Any subhead or accent over footage is `rose`.
+
 ### Faces  (`src/kit/fonts.ts`, self-hosted in public/fonts/)
 
 | Role | Face | Weight |
 |---|---|---|
 | Display + captions | Instrument Sans | 500 / 600 / 700 |
 | Labels, ordinals | DM Mono | 500 |
-| Asides only | your own handwritten face | — |
 
-Instrument Sans and DM Mono are bundled (SIL OFL). The aside face is not —
-drop a licensed script font at `public/fonts/Aside.otf` (cursive fallback
-otherwise). Line-fitting is live `measureText` against the loaded faces
+**Two faces. That is the whole system.** Both are bundled (SIL OFL). v5 retired
+the third "handwritten" aside face along with the asides that used it — do not
+reintroduce one; if a remark is worth showing, it is worth showing in
+Instrument Sans. Line-fitting is live `measureText` against the loaded faces
 (`src/kit/fit.ts`) — no static metrics tables.
 
 ---
@@ -65,9 +70,9 @@ collision.
 
 | Element | Position |
 |---|---|
-| Hook title | top 190, centred in safe zone |
+| Hook title | top 190, **left-aligned at `LEFT`** (cover lockup) |
 | Recording card | x 28, y 150–770 |
-| Logo pops | y ~430, centred |
+| Logo pops | y ~430, **left-aligned at `LEFT`** |
 | Memes | wall space, y ~380–520, never over the speaker's face |
 | Captions | 71% (y 1363) — under a card: y 804 |
 | Emphasis groups | display band y ~450–700, centred ± dx |
@@ -122,14 +127,31 @@ One continuous take, cut hard. No crossfades, zoom ramps, or speed ramps.
 
 ## 4. Text components  (`src/kit/kit.tsx`)
 
+### The cover lockup — the house treatment
+ONE text treatment carries the cover image AND the on-screen hook. Using the
+same lockup in both places is most of what makes a feed look art-directed
+rather than assembled.
+
+- **Numeral** top-left, `left 64 / top 96`, 300px/700, `-0.06em`, **blush**.
+- **Headline** at `LEFT / top 420`, width `SAFE_W`, 700, `lh 0.95`, `-0.04em`,
+  each line fitted by `fitSans(line, 118, SAFE_W, 700, -0.04)` so **no line
+  ever wraps**. Parchment, except the payoff line, which is **rose**. Two or
+  three lines; the payoff is the line that lands the promise, not a fixed index.
+- **Tail line** below the headline, 44px/500, **blush**, **two lines maximum**.
+  A third line lands on the speaker's face — cut the copy or move it into the
+  reel.
+- Three-layer shadow on every layer, over a deep top-down scrim
+  (`rgba(0,0,0,0.56)` → transparent by 66%).
+
 ### Hook — persistent top title
-Two- or three-line headline (parchment, 700, fitted) + optional parenthetical
-subhead (blush, 500, 44px), centred at top 190. Three-line form (v4): sizes
-step ~84/66/76 so the lines read as one lockup, and the payoff line — usually
-the last — takes `accentLine` and lands in rose. Lands on a 3f fade, HOLDS
-~14s while the speaker is already talking, captions running underneath. It
-never sits on top of a recording — the first card waits for it to leave. No
-numeral takeover.
+**The hook IS the cover lockup** (`coverStyle`) — left-aligned at the safe
+margin, same three-layer shadow, same rose accent line. The centred
+small-subhead form it replaced was markedly less readable over footage.
+Subhead is `rose` at 50px, and `bareSubhead` unless the copy is written with
+its own parentheses. Lands on a 3f fade, HOLDS ~14s while the speaker is
+already talking, captions running underneath. It never sits on top of a
+recording — the first card waits for it to leave. No numeral takeover in the
+reel; the logo pops mark the sections.
 
 **The hook collage** (v4): while the hook holds, 2–4 `FloatingCard`s of the
 speaker's actual products/covers pop into the wall space BEHIND the speaker
@@ -144,8 +166,11 @@ the CTA.
   **Under a card: y 804** (the gap between card bottom and the head). The
   band is decided once per cell from its temporal midpoint — a cell spanning
   an insert boundary never jumps bands mid-life.
-- The stressed word is tinted **rose**. Never scaled, never moved. Most cells
-  have none.
+- **Tint PHRASES, not single words** (v5). The tint spans the whole meaningful
+  phrase — "WHAT'S CHANGED SINCE FRIDAY", "WHO'S WAITING ON YOU" — and runs
+  across cell boundaries where the phrase does, so a cell is usually tinted
+  whole. A lone tinted word reads as a typo. Rose, never scaled, never moved.
+  Roughly one phrase every 6–8s; most cells have none.
 - Captions run under the hook and the cards; they yield only to emphasis
   groups and the CTA.
 - Ordinals stay stripped — the logo pop says the section once.
@@ -174,17 +199,28 @@ into the caption band. Position each group's lines at varied x so nothing
 stacks centred. One build sequence per reel may sit behind the speaker
 (§2b).
 
-### CTA line (v4, `CtaLine`)
-"comment "SYSTEM"" — rose, 700, ~60px, centred at top 150–190, landing on a
-3f fade with ONE light-sweep glint (frames 4–18, then never again). No
-type-on — the sans faces do not type (§7). Pair it with a `FloatingCard` of
-the actual deliverable (paper frame, cursor) in the wall space, and hold
-both to the end. The card is the proof; the reference holds hers ~10s.
+### CTA — the three-line offer lockup (`CtaLine`)
+Three lines, one axis, even ~30px gaps:
+
+```
+comment "KEYWORD"       y 348   rose, 700, ~60px
+YOUR OFFER NAME         y 430   (two lines if it needs them)
+LINE TWO                y 516
+```
+
+The offer NAME always sits under the comment line — a keyword alone tells the
+viewer nothing about what they are asking for. **Centre on the SAFE-ZONE centre
+(x ≈ 500), not the frame centre (540)** — the safe zone is offset left to clear
+the action rail, and mixing the two skews the block 40px. One light-sweep glint
+on the first line (frames 4–18, then never again); no type-on. Pair it with a
+`FloatingCard` of the actual deliverable in the wall space and hold both to the
+end. The card is the proof; the reference holds hers ~10s.
 
 ### Logo pops — the section markers
-Brand mark + name, **centred** in the wall space (y ~430), landing with a
-6f back-eased scale pop and a `pop` SFX as the company is named; gone before
-that section's card arrives. Real marks only — from the brand's own assets if
+Brand mark + name in the wall space (y ~430), landing with a 6f back-eased
+scale pop and a `pop` SFX as the company is named; gone before that section's
+card arrives. **`align: 'left'`, at the same margin as the lockup** — a centred
+mark under a left-aligned hook reads as a mistake. Real marks only — from the brand's own assets if
 not already in `public/tool-logos/` — or a brand-colour wordmark when no mark
 is available. A wrong logo is worse than no logo.
 
@@ -195,12 +231,11 @@ rotation, wall space only, **never over the speaker's face**, never
 simultaneous with an emphasis group. Keep a small approved library rather than
 grabbing per video.
 
-### Asides (Ugly Dave)
-A remark NOT in the spoken script, 1–2 per video max; if there's no genuine
-aside the face doesn't appear. **Types on** character-by-character
-(charDur ~1.4) with `typing.mp3` underneath spanning `asideTypeFrames()` — the
-hand-written mimic. Off-axis, rotated 2–4°, 54px, parchment. The typed-text
-ban applies to the sans faces only.
+### Asides — RETIRED (v5)
+The typed-on handwritten aside is gone, and with it the typed register
+entirely. `Aside` and `asideTypeFrames` remain in the kit only so older reels
+still render; do not use them in a new reel. An off-script remark goes in an
+emphasis group or a caption phrase, in Instrument Sans, like everything else.
 
 ---
 
@@ -247,7 +282,7 @@ back on screen the frame it ends.
 
 ## 6. Sound  (`src/kit/sfx.ts`)
 
-Four sounds in the whole system. Files are not bundled — drop your own into
+Three sounds in the whole system. Files are not bundled — drop your own into
 `public/sfx/` under these names. Treat the volumes as design decisions, tuned
 by ear against speech; judge any change by listening, not by meters.
 
@@ -256,7 +291,6 @@ by ear against speech; judge any change by listening, not by meters.
 | `whoosh` | the hook, once per reel | 0.37 |
 | `pop` | each emphasis payoff line, each logo pop | 0.40 |
 | `click` | each recording card landing | 0.43 |
-| `typing` | under each aside as it types on | 0.34 |
 
 Setup/tail lines land silently. No sound on plain footage cuts. Nothing
 per-word, no sparkle/ding/riser, no music bed baked in.
@@ -274,7 +308,11 @@ per-word, no sparkle/ding/riser, no music bed baked in.
 - Caption groups over 3–4 words, or captions sitting on the face
 - Blush as a caption tint (invisible); dark tints (die on dark clothing)
 - Left-hugging emphasis blocks or logos; identical placement every time
-- Typed-on sans text (the script face types; that is its register)
+- Typed-on text of any kind, in any face (the aside register is retired)
+- A third display face for a "handwritten" register
+- Blush on a subhead or any small type over footage (it vanishes — use rose)
+- A single-word caption tint (tint the phrase)
+- A centred logo pop under a left-aligned lockup
 - Two faces inside one spoken sentence
 - Hooks that take over the frame, or sit on top of a recording
 - Unapproved SFX, per-word sounds, processed audio
@@ -299,8 +337,6 @@ Emphasis lines, verbatim from her script:
   1. [setup] / [payoff]  around f[N]
   2. ...
 
-Asides (not spoken):
-  1. [text] after f[N]     // or: none
 ```
 
 **Before building**, the agent reports back: the logo list (marks found vs
@@ -318,7 +354,7 @@ file, not the prompt.
 |---|---|
 | `src/kit/reelTokens.ts` | palette, faces, zones, type shadow |
 | `src/kit/fonts.ts` | FontFace loading (bundled OFL faces + your aside face) |
-| `src/kit/kit.tsx` | Hook, GroupCaptions, EmphasisGroup, EmphasisBuild, CtaLine, LogoPop, MemePop, Aside, Sfx |
+| `src/kit/kit.tsx` | Hook, GroupCaptions, EmphasisGroup, EmphasisBuild, CtaLine, LogoPop, MemePop, Sfx (+ retired `Aside`) |
 | `src/kit/ScreenInsert.tsx` | the recording card |
 | `src/kit/Takeover.tsx` | FloatingCard, TopTakeover, DocTakeover |
 | `src/kit/Person.tsx` | the matted person layer (behind-the-speaker stack) |
@@ -350,3 +386,11 @@ file, not the prompt.
   one-sweep glint (no type-on — the sans type ban stands). The reference's
   butter-yellow accent maps to rose/blush; the cream ground IS parchment —
   v4.
+- **v5.** The branding settled across a full build's review rounds, written
+  down so it stops drifting. In: one cover lockup carrying both the cover image
+  and the on-screen hook (`coverStyle`, left-aligned, rose accent line, bare
+  subhead); blush restricted to big type, rose carrying every small accent;
+  caption tints as phrases rather than single words; logo pops aligned left
+  with the lockup; the CTA as a three-line offer lockup on the safe-zone axis.
+  Retired: the handwritten aside face and the typed-on register that used it,
+  leaving two faces in the whole system.
