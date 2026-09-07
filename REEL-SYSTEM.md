@@ -184,6 +184,23 @@ the CTA.
 - 4–6 per video, on the sentences carrying the argument.
 - One face throughout — never split a spoken sentence across faces.
 
+**Plain statements, never slogans.** The three lines are one sentence about
+what the feature actually DOES, broken across setup / payoff / tail. **The
+test: with the sound off, would a viewer learn what the thing does?** A slogan
+fails that test even when it sounds good.
+
+| Rejected (slogan) | Shipped (plain statement) |
+|---|---|
+| IN ONE PLACE | drop in an email thread / **AND A MEETING** / one notebook reads both |
+| you stop re-reading / THE WHOLE THING | it flagged the whole paragraph / **NOW: EACH WORD** / exactly what it changed |
+
+Two failure modes this kills: copy that sounds punchy but names no mechanic,
+and copy that goes technically wrong for the sake of a line. Where the update
+is a CHANGE, state the before and the after — usually the clearest form. Setup
+and tail carry the mechanic, the payoff carries the one thing worth reading
+big; keep the payoff to roughly 14 characters or `fitSans` shrinks it out of
+the display band.
+
 ### Emphasis builds — the word-timed variant (v4, `EmphasisBuild`)
 For a spoken LIST (Research… Find… Organize… Create…), the block form above
 is wrong — the reference lands each item AS IT IS SPOKEN. One visual line
