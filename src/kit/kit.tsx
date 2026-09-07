@@ -650,6 +650,105 @@ export const LogoPop: React.FC<{chip: LogoChip; shadow?: string}> = ({
 // A looping reaction clip in the empty wall space, expressing what the speaker is not
 // saying out loud — the reference creator's Angela Lansbury move. 1–2 per
 // video, from your own approved library in public/memes/, never over the speaker's face.
+// ── CTA end card (§4, v5) ───────────────────────────────────────────
+// The CTA is an END CARD, not a single line. The speaker writes the copy; this sets it
+// and does not paraphrase. Left-aligned at the safe margin so it matches the
+// cover lockup, over the same scrim, with rose carrying the date and the
+// comment keyword.
+export type CtaCardLine = {
+	text: string;
+	/** Substring rendered in rose — the date, the keyword. */
+	tint?: string;
+	size?: number;
+	weight?: number;
+	/** Extra space above this line. */
+	gap?: number;
+	/** Absolute frame this line lands (as it is spoken). Defaults to the card's start. */
+	at?: number;
+	/** Substring colour override for the tint (default rose). */
+	tintColor?: string;
+};
+
+export type CtaCardSpec = {
+	lines: CtaCardLine[];
+	start: number;
+	end: number;
+	top?: number;
+};
+
+export const CtaCard: React.FC<{cta: CtaCardSpec}> = ({cta}) => {
+	const frame = useCurrentFrame();
+	if (frame < cta.start || frame >= cta.end) return null;
+	const alpha = landed(frame, cta.start + 2);
+
+	return (
+		<>
+			<div
+				style={{
+					position: 'absolute',
+					left: 0,
+					top: 0,
+					width: 1080,
+					height: 980,
+					opacity: alpha,
+					background:
+						'linear-gradient(180deg, rgba(0,0,0,0.60) 0%, rgba(0,0,0,0.46) 30%, rgba(0,0,0,0.24) 55%, rgba(0,0,0,0) 100%)',
+				}}
+			/>
+			<div
+				style={{
+					position: 'absolute',
+					left: LEFT,
+					top: cta.top ?? 250,
+					width: SAFE_W,
+					opacity: alpha,
+					fontFamily: FACE.sans,
+					textShadow: COVER_SHADOW,
+				}}
+			>
+				{cta.lines.map((l) => {
+					const weight = l.weight ?? 500;
+					const size = fitSans(l.text, l.size ?? 44, SAFE_W, weight, -0.02);
+					const i = l.tint ? l.text.indexOf(l.tint) : -1;
+					const at = l.at ?? cta.start;
+					// Each line lands on its own frame with a short rise, so the card
+					// BUILDS while the speaker talks instead of dumping a block of text.
+					const p = interpolate(frame, [at, at + 8], [0, 1], {
+						extrapolateLeft: 'clamp',
+						extrapolateRight: 'clamp',
+						easing: Easing.out(Easing.cubic),
+					});
+					return (
+						<div
+							key={l.text}
+							style={{
+								marginTop: l.gap ?? 0,
+								fontSize: size,
+								fontWeight: weight,
+								lineHeight: 1.08,
+								letterSpacing: '-0.025em',
+								color: REEL.parchment,
+								opacity: p,
+								transform: `translateY(${(1 - p) * 14}px)`,
+							}}
+						>
+							{i < 0 ? (
+								l.text
+							) : (
+								<>
+									{l.text.slice(0, i)}
+									<span style={{color: l.tintColor ?? REEL.rose}}>{l.tint}</span>
+									{l.text.slice(i + (l.tint as string).length)}
+								</>
+							)}
+						</div>
+					);
+				})}
+			</div>
+		</>
+	);
+};
+
 export type Meme = {
 	/** File in public/memes/. */
 	src: string;

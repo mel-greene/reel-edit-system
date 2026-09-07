@@ -72,7 +72,7 @@ collision.
 |---|---|
 | Hook title | top 190, **left-aligned at `LEFT`** (cover lockup) |
 | Recording card | x 28, y 150–770 |
-| Logo pops | y ~430, **left-aligned at `LEFT`** |
+| Logo pops | y ~430, centred (left only when part of the hook lockup) |
 | Memes | wall space, y ~380–520, never over the speaker's face |
 | Captions | 71% (y 1363) — under a card: y 804 |
 | Emphasis groups | display band y ~450–700, centred ± dx |
@@ -218,7 +218,12 @@ stacks centred. One build sequence per reel may sit behind the speaker
 
 ### CTA — the end card
 The CTA is an END CARD, not a single line, and the speaker writes the copy —
-the build sets it, it does not paraphrase. Shape:
+the build sets it, it does not paraphrase. **It lands the moment the offer is
+named and builds line by line on the frames each thing is said, in the order
+it is said**, ending on the comment keyword (`CtaCard`, per-line `at`). A block
+that appears all at once reads as a bunch of text; the stagger is what makes it
+a lockup. Hierarchy: offer name big in two lines (second in rose), one kickoff
+line with the date in rose, details small, `Comment KEYWORD` big. Shape:
 
 ```
 Your offer name                      title, parchment, 700
@@ -240,8 +245,10 @@ end. The card is the proof; the reference holds hers ~10s.
 ### Logo pops — the section markers
 Brand mark + name in the wall space (y ~430), landing with a 6f back-eased
 scale pop and a `pop` SFX as the company is named; gone before that section's
-card arrives. **`align: 'left'`, at the same margin as the lockup** — a centred
-mark under a left-aligned hook reads as a mistake. Real marks only — from the brand's own assets if
+card arrives. **Section pops are CENTRED in the wall space** — a lone mark at
+the left margin with nothing above it reads as randomly placed. `align: 'left'`
+exists for ONE case: a mark that is part of the hook lockup and sits directly
+under it, where a centred mark under left-aligned type read as a mistake. Real marks only — from the brand's own assets if
 not already in `public/tool-logos/` — or a brand-colour wordmark when no mark
 is available. A wrong logo is worse than no logo.
 
@@ -253,6 +260,10 @@ over the speaker's face**, never simultaneous with an emphasis group.
 **Pop-culture memes** — a recognizable moment, not a generic reaction clip.
 Giphy (`https://media.giphy.com/media/<id>/giphy.mp4`) is reliably 480px;
 Tenor's mp4s are 148–320px and go soft when scaled up.
+
+**Match the meme to the LINE, not the mood, and never under the CTA.** If the
+read isn't obvious on that exact line, use no meme — and don't replace a cut
+one. One review cut three of three; the reel was better for it.
 
 **Never reuse a meme.** Repeating one a reel later reads as a template (§7).
 Keep a written list of what has shipped and in which reel, and read it before
@@ -340,7 +351,7 @@ per-word, no sparkle/ding/riser, no music bed baked in.
 - A third display face for a "handwritten" register
 - Blush on a subhead or any small type over footage (it vanishes — use rose)
 - A single-word caption tint (tint the phrase)
-- A centred logo pop under a left-aligned lockup
+- A logo pop at the left margin that is not part of the hook lockup
 - Two faces inside one spoken sentence
 - Hooks that take over the frame, or sit on top of a recording
 - Unapproved SFX, per-word sounds, processed audio
