@@ -62,6 +62,12 @@ export type Hook = {
 	/** Wrapped in parentheses by default, an aside register: "(it isn't
 	 *  close)". Set `bareSubhead` when the subhead is a statement. */
 	subhead?: string;
+	/** Two lines max, for subhead copy too long to fit SAFE_W on one line at
+	 *  cover scale. `fitSans` shrinks a single line to fit, so a ~60-character
+	 *  subhead lands near 27px and is unreadable over footage; splitting it
+	 *  keeps it at full size. Takes precedence over `subhead`, and follows the
+	 *  same two-line ceiling as the cover tail. */
+	subheadLines?: string[];
 	bareSubhead?: boolean;
 	/** Cover treatment: left-aligned at the safe margin, the cover's
 	 *  three-layer shadow and scrim, subhead at cover scale (54px). Markedly
@@ -93,11 +99,12 @@ export const HookTitle: React.FC<{hook: Hook; shadow?: string}> = ({
 		extrapolateRight: 'clamp',
 	});
 	const alpha = landed(frame, hook.start + 2) * out;
-	const sub = hook.subhead
-		? hook.bareSubhead
-			? hook.subhead
-			: `(${hook.subhead})`
-		: null;
+	const subLines = (
+		hook.subheadLines ??
+		(hook.subhead ? [hook.bareSubhead ? hook.subhead : `(${hook.subhead})`] : [])
+	).filter(Boolean);
+	// The whole block is sized off the longest line so both lines match.
+	const subLongest = subLines.reduce((a, b) => (a.length >= b.length ? a : b), '');
 
 	return (
 		<>
@@ -154,7 +161,7 @@ export const HookTitle: React.FC<{hook: Hook; shadow?: string}> = ({
 						</div>
 					))}
 				</div>
-				{sub ? (
+				{subLines.length ? (
 					<div
 						style={{
 							marginTop: cover ? 22 : 10,
@@ -162,7 +169,7 @@ export const HookTitle: React.FC<{hook: Hook; shadow?: string}> = ({
 							fontWeight: cover ? 600 : 500,
 							lineHeight: cover ? 1.2 : undefined,
 							letterSpacing: cover ? '-0.01em' : undefined,
-							fontSize: fitSans(sub, cover ? 54 : 44, SAFE_W, cover ? 600 : 500),
+							fontSize: fitSans(subLongest, cover ? 54 : 44, SAFE_W, cover ? 600 : 500),
 							// Blush disappears into a pale wall even under the scrim.
 							// Rose is the brighter pink already carrying the caption
 							// tints and the CTA. This applies to BOTH forms — leaving
@@ -171,7 +178,9 @@ export const HookTitle: React.FC<{hook: Hook; shadow?: string}> = ({
 							textShadow: ink,
 						}}
 					>
-						{sub}
+						{subLines.map((l) => (
+							<div key={l}>{l}</div>
+						))}
 					</div>
 				) : null}
 			</div>
