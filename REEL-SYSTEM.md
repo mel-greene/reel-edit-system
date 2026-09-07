@@ -199,17 +199,21 @@ into the caption band. Position each group's lines at varied x so nothing
 stacks centred. One build sequence per reel may sit behind the speaker
 (§2b).
 
-### CTA — the three-line offer lockup (`CtaLine`)
-Three lines, one axis, even ~30px gaps:
+### CTA — the end card
+The CTA is an END CARD, not a single line, and the speaker writes the copy —
+the build sets it, it does not paraphrase. Shape:
 
 ```
-comment "KEYWORD"       y 348   rose, 700, ~60px
-YOUR OFFER NAME         y 430   (two lines if it needs them)
-LINE TWO                y 516
+Your offer name                      title, parchment, 700
+Live kickoff: <date>                 rose on the date
+What they get, one line              parchment, 500
+Comment KEYWORD or use the bio link  rose on the keyword
+The deadline, one line               parchment, 500
 ```
 
-The offer NAME always sits under the comment line — a keyword alone tells the
-viewer nothing about what they are asking for. **Centre on the SAFE-ZONE centre
+The offer NAME leads — a keyword alone tells the viewer nothing about what they
+are asking for — and **both mechanics ship on every promo**: the comment
+keyword AND the link in bio. **Centre on the SAFE-ZONE centre
 (x ≈ 500), not the frame centre (540)** — the safe zone is offset left to clear
 the action rail, and mixing the two skews the block 40px. One light-sweep glint
 on the first line (frames 4–18, then never again); no type-on. Pair it with a
@@ -225,11 +229,18 @@ not already in `public/tool-logos/` — or a brand-colour wordmark when no mark
 is available. A wrong logo is worse than no logo.
 
 ### Memes
-1–3 per video, from your own approved library in `public/memes/` (short
-looping mp4s; not bundled — source your own). Rounded 14, soft shadow, slight
-rotation, wall space only, **never over the speaker's face**, never
-simultaneous with an emphasis group. Keep a small approved library rather than
-grabbing per video.
+1–3 per video from `public/memes/` (short looping mp4s; not bundled — source
+your own). Rounded 14, soft shadow, slight rotation, wall space only, **never
+over the speaker's face**, never simultaneous with an emphasis group.
+
+**Pop-culture memes** — a recognizable moment, not a generic reaction clip.
+Giphy (`https://media.giphy.com/media/<id>/giphy.mp4`) is reliably 480px;
+Tenor's mp4s are 148–320px and go soft when scaled up.
+
+**Never reuse a meme.** Repeating one a reel later reads as a template (§7).
+Keep a written list of what has shipped and in which reel, and read it before
+proposing — grepping the source tree alone misses data-file arrays and has
+produced repeats more than once.
 
 ### Asides — RETIRED (v5)
 The typed-on handwritten aside is gone, and with it the typed register
