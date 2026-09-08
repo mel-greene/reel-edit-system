@@ -402,6 +402,18 @@ timing judgment calls. The owner signs off, then the build runs. Everything
 else — cuts, caption cells, tints, sizes, placement — is decided by this
 file, not the prompt.
 
+**Before rendering — the proof sheet.** Once the data file is written, the
+agent renders one still per text beat — the hook, every emphasis group at its
+full build, every word build, each logo pop, the end card at its last frame —
+tiles them into contact sheets (360px wide per still, `hstack`), and sends
+them to the owner with one line naming each beat. The owner reads the copy
+and the placement off the sheets and corrects them there; only then does the
+MP4 render. If the footage has not arrived yet, proof over the previous
+reel's take (`--props='{"footage":"<prev>.mp4"}'`) — the same setup is close
+enough to catch a line on the speaker's face or in the action rail. Re-proof
+any frame that changes. A render the owner has not seen the overlays for is
+a render that comes back.
+
 ---
 
 ## 9. Kit map
@@ -424,6 +436,12 @@ file, not the prompt.
 
 ## 10. Changelog
 
+- **Proof-sheet gate (§8).** Every text beat is rendered as a still and sent
+  to the owner as contact sheets for sign-off BEFORE the MP4 renders — over
+  the previous take if the footage is not in yet. On its first use the sheets
+  caught a five-line word build on the speaker's forehead, a line in the
+  action rail, and an emphasis group whose copy did not say what was meant,
+  all before a single render.
 - **Instagram safe area re-measured from a live post (§2).** The feed crops
   ~49px off each side and maps canvas y ~1:1, and the top icon row occupies
   y 187–231 — so a hook at 190 and an end card at 210–250 were printing under
