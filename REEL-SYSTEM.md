@@ -175,7 +175,7 @@ the CTA.
 - **1–3 word cells** split on natural sub-boundaries from whisper.cpp word
   timings. Hard cut in/out. No motion, ever.
 - 58px / 600 (raised from 52 after review), parchment, centred, band at 71%.
-  **Under a card: y 804** (the gap between card bottom and the head). The
+  **Under a card: y 915** (the gap between card bottom and the head). The
   band is decided once per cell from its temporal midpoint — a cell spanning
   an insert boundary never jumps bands mid-life.
 - **Tint PHRASES, not single words** (v5). The tint spans the whole meaningful
