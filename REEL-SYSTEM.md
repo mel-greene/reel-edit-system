@@ -174,7 +174,7 @@ the CTA.
 ### Running captions — quiet
 - **1–3 word cells** split on natural sub-boundaries from whisper.cpp word
   timings. Hard cut in/out. No motion, ever.
-- 58px / 600 (raised from 52 after review), parchment, centred, band at 71%.
+- **68px** / 600 (the kit default), parchment, centred, band at 71%.
   **Under a card: y 915** (the gap between card bottom and the head). The
   band is decided once per cell from its temporal midpoint — a cell spanning
   an insert boundary never jumps bands mid-life.
@@ -201,11 +201,9 @@ fit the safe width — the kit scales an overflowing line down) at y ~516, tail
 small at y ≈ 516 + payoff·0.92 + 18. Left offsets varied per line so nothing
 stacks centred. The older 66 / 150 / 66 block with 75 and 146px gaps is
 retired.
-- The block is **centred as a composition**, stagger applied around centre:
-  setup −48, payoff 0, tail +84. Each group takes a `dx` nudge (±40–65,
-  varied across the video) so placement reads as chosen, not templated.
-- Payoff 150px/700 blush, setup/tail 66px/600 parchment; payoff 2.0–2.5x the
-  setup. One line per beat on a 3f fade; accumulate, hold, clear together.
+- Each line lands on its spoken frame (the big word with the one sanctioned
+  back-eased scale pop and a `pop` SFX; small lines fade in silently);
+  accumulate, hold, clear together.
 - 4–6 per video, on the sentences carrying the argument.
 - One face throughout — never split a spoken sentence across faces.
 
@@ -241,7 +239,11 @@ into the caption band. Position each group's lines at varied x so nothing
 stacks centred. One build sequence per reel may sit behind the speaker
 (§2b).
 
-### CTA — the end card
+### CTA — the end card (per video)
+**The CTA / end card changes with every video.** The owner writes the copy;
+the build sets it and does not paraphrase. When a take has two platform
+endings (comment keyword / link in bio), each version carries ONLY its own
+closing line and stops at its own ending.
 The CTA is an END CARD, not a single line, and the speaker writes the copy —
 the build sets it, it does not paraphrase. **It lands the moment the offer is
 named and builds line by line on the frames each thing is said, in the order
