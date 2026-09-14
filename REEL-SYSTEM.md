@@ -86,7 +86,6 @@ shows a clipped character.
 | Hook title | top **300**, **left-aligned at `LEFT`** (cover lockup) |
 | Recording card | x 28, y 150–770 |
 | Logo pops | y ~430, centred (left only when part of the hook lockup) |
-| Memes | wall space, y ~380–520, never over the speaker's face |
 | Captions | 71% (y 1363) — under a card: y 804 |
 | Emphasis groups | display band y ~450–700, centred ± dx |
 
@@ -276,23 +275,10 @@ under it, where a centred mark under left-aligned type read as a mistake. Real m
 not already in `public/tool-logos/` — or a brand-colour wordmark when no mark
 is available. A wrong logo is worse than no logo.
 
-### Memes
-1–3 per video from `public/memes/` (short looping mp4s; not bundled — source
-your own). Rounded 14, soft shadow, slight rotation, wall space only, **never
-over the speaker's face**, never simultaneous with an emphasis group.
-
-**Pop-culture memes** — a recognizable moment, not a generic reaction clip.
-Giphy (`https://media.giphy.com/media/<id>/giphy.mp4`) is reliably 480px;
-Tenor's mp4s are 148–320px and go soft when scaled up.
-
-**Match the meme to the LINE, not the mood, and never under the CTA.** If the
-read isn't obvious on that exact line, use no meme — and don't replace a cut
-one. One review cut three of three; the reel was better for it.
-
-**Never reuse a meme.** Repeating one a reel later reads as a template (§7).
-Keep a written list of what has shipped and in which reel, and read it before
-proposing — grepping the source tree alone misses data-file arrays and has
-produced repeats more than once.
+### Memes — RETIRED
+Meme pops are no longer part of the system. `MemePop` stays in the kit only
+so older reels still render. Do not propose meme beats in the pre-build
+report; the wall space belongs to logo pops, cards and emphasis groups.
 
 ### Asides — RETIRED (v5)
 The typed-on handwritten aside is gone, and with it the typed register
@@ -403,7 +389,7 @@ Emphasis lines, verbatim from her script:
 ```
 
 **Before building**, the agent reports back: the logo list (marks found vs
-wordmark fallbacks), 1–3 proposed meme beats — the line, the emotion, a named
+wordmark fallbacks), (memes retired) — the line, the emotion, a named
 meme from `public/memes/` or a named suggestion to source — and any crop or
 timing judgment calls. The owner signs off, then the build runs. Everything
 else — cuts, caption cells, tints, sizes, placement — is decided by this
