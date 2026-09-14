@@ -84,9 +84,9 @@ shows a clipped character.
 | Element | Position |
 |---|---|
 | Hook title | top **300**, **left-aligned at `LEFT`** (cover lockup) |
-| Recording card | x 28, y 150–770 |
+| Recording card | x 60, y 300–881 (inside the visible area) |
 | Logo pops | y ~430, centred (left only when part of the hook lockup) |
-| Captions | 71% (y 1363) — under a card: y 804 |
+| Captions | 71% (y 1363) — under a card: y 915 |
 | Emphasis groups | display band y ~450–700, centred ± dx |
 
 ---
@@ -306,7 +306,7 @@ rotation. `paper` mat (white, stacked-sheet shadow) for files/covers, `photo`
 for prints, `plain` for UI crops. The Mac `cursor` prop is the "I dragged
 this in" wink — use it on files, not photos.
 
-**The card** (`ScreenInserts`) — unchanged from v3: x 28, top 150, 1024x620,
+**The card** (`ScreenInserts`) — unchanged from v3: x 60, top 300, 960x581,
 radius 24, soft shadow, hard cut in with a `click`. No blur behind, no dim,
 no drift. Source mockups are 1080x1350; the crop window pans
 `cropY → cropY2` so the cursor stays in view — verify crops against stills.
