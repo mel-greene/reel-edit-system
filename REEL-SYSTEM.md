@@ -389,9 +389,7 @@ Emphasis lines, verbatim from her script:
 ```
 
 **Before building**, the agent reports back: the logo list (marks found vs
-wordmark fallbacks), (memes retired) — the line, the emotion, a named
-meme from `public/memes/` or a named suggestion to source — and any crop or
-timing judgment calls. The owner signs off, then the build runs. Everything
+wordmark fallbacks) and any crop or timing judgment calls. The owner signs off, then the build runs. Everything
 else — cuts, caption cells, tints, sizes, placement — is decided by this
 file, not the prompt.
 
