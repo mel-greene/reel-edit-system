@@ -156,7 +156,7 @@ rather than assembled.
   (`rgba(0,0,0,0.56)` → transparent by 66%).
 
 ### Hook — persistent top title
-**The hook IS the cover lockup** (`coverStyle`) — left-aligned at the safe
+**The hook IS the cover lockup, numeral included** (`coverStyle` + `numeral`) — left-aligned at the safe
 margin, same three-layer shadow, same rose accent line. The centred
 small-subhead form it replaced was markedly less readable over footage.
 Subhead is `rose` at 50px, and `bareSubhead` unless the copy is written with
