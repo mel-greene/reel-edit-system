@@ -195,6 +195,12 @@ the CTA.
 - Ordinals stay stripped — the logo pop says the section once.
 
 ### Emphasis groups — loud
+**The tightened cluster is the standard.** Three word-timed lines set with
+`EmphasisBuild`: setup small (56px) at y ~452, payoff big (88–126px, sized to
+fit the safe width — the kit scales an overflowing line down) at y ~516, tail
+small at y ≈ 516 + payoff·0.92 + 18. Left offsets varied per line so nothing
+stacks centred. The older 66 / 150 / 66 block with 75 and 146px gaps is
+retired.
 - The block is **centred as a composition**, stagger applied around centre:
   setup −48, payoff 0, tail +84. Each group takes a `dx` nudge (±40–65,
   varied across the video) so placement reads as chosen, not templated.
