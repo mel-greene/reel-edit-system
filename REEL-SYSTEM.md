@@ -183,7 +183,14 @@ the CTA.
   phrase — "WHAT'S CHANGED SINCE FRIDAY", "WHO'S WAITING ON YOU" — and runs
   across cell boundaries where the phrase does, so a cell is usually tinted
   whole. A lone tinted word reads as a typo. Rose, never scaled, never moved.
-  Roughly one phrase every 6–8s; most cells have none.
+- **Chosen by MEANING, never by timing.** A phrase earns a tint only if it is
+  one of: the feature's win in the speaker's own words; the exact control or
+  label the viewer has to find ("Video Recap", "Summarize a file"); or a hard
+  requirement ("10 and 90 minutes"). A section with nothing that qualifies
+  gets no tint. Do not space tints on a cadence and do not tint filler that
+  happens to land on the interval. Most cells have none; more than about one
+  tint per 6–8s means the selection is too loose — that number is a ceiling,
+  not a target. Lines owned by an emphasis group or the CTA card get no tint.
 - Captions run under the hook and the cards; they yield only to emphasis
   groups and the CTA.
 - Ordinals stay stripped — the logo pop says the section once.
