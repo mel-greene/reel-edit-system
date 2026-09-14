@@ -73,9 +73,9 @@ to the screen and canvas x is inset by ~49.
 **Nothing may start above y 290.** An earlier version of this table put the hook
 at y 190, which is inside the icon row — on a live post Instagram's camera icon
 printed straight through a headline word, and the end card sat under the back
-arrow. The hook and the end card both start at **300**. The recording card (§5,
-top 150) still clears everything because it is a full-width surface with no type
-in its top rows.
+arrow. The hook and the end card both start at **300**. The recording card (§5) sits
+at top 300 and 960 wide so real app recordings keep their title bar and
+right-edge buttons inside the visible area.
 
 Side note on the ~49px side crop: text at `LEFT` (70) shows about 21px from the
 visible edge. Tight but not cut, so `LEFT` is unchanged — revisit if a post ever
