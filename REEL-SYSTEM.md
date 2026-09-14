@@ -399,7 +399,9 @@ full build, every word build, each logo pop, the end card at its last frame —
 tiles them into contact sheets (360px wide per still, `hstack`), and sends
 them to the owner with one line naming each beat. The owner reads the copy
 and the placement off the sheets and corrects them there; only then does the
-MP4 render. If the footage has not arrived yet, proof over the previous
+MP4 render. Before sending the sheets, check EVERY overlay type — hook, pops,
+emphasis, captions, end card AND the recording cards — against the §2 zones
+(icon row, right rail, side crops). If the footage has not arrived yet, proof over the previous
 reel's take (`--props='{"footage":"<prev>.mp4"}'`) — the same setup is close
 enough to catch a line on the speaker's face or in the action rail. Re-proof
 any frame that changes. A render the owner has not seen the overlays for is
