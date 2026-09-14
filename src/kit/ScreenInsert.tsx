@@ -13,16 +13,17 @@
 import React from 'react';
 import {OffthreadVideo, Sequence, interpolate, staticFile, useCurrentFrame} from 'remotion';
 
-/** Card geometry. The reference's recordings sit in the top third: inset from
- *  the edges, rounded, below the platform chrome. */
-export const CARD_X = 28;
-export const CARD_TOP = 150;
-export const CARD_W = 1080 - CARD_X * 2; // 1024
-export const CARD_H = 620;
+/** Card geometry. Inside Instagram's visible area (REEL-SYSTEM.md §2): below
+ *  the top icon row (y 187–231) and clear of the ~49px side crops. The old
+ *  28/150/1024 card put the app's title bar under the icons and lost 21px of
+ *  UI to each side crop. */
+export const CARD_X = 60;
+export const CARD_TOP = 300;
+export const CARD_W = 1080 - CARD_X * 2; // 960
+export const CARD_H = Math.round(CARD_W * 620 / 1024); // 581, same aspect as before
 export const CARD_R = 24;
-/** Where the caption band sits while a card is up: between the card's bottom
- *  edge and her head. */
-export const CAPTION_UNDER_CARD = CARD_TOP + CARD_H + 34; // 804
+/** Where the caption band sits while a card is up: just under the card. */
+export const CAPTION_UNDER_CARD = CARD_TOP + CARD_H + 34; // 915
 
 export type Insert = {
 	src: string;

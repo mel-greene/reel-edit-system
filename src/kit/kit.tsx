@@ -81,6 +81,13 @@ export type Hook = {
 	/** Per-line max sizes. The reference steps them 84 / 66 / 76 so the three
 	 *  lines read as one lockup, not three rows of the same thing. */
 	sizes?: number[];
+	/** The cover's big blush numeral. v5: the reel hook is the cover
+	 *  treatment, numeral included — moved down so the whole lockup sits
+	 *  inside the platform's visible area (§2: nothing above 300). Rendered at
+	 *  `numeralSize` (default 220) from top 300; the headline follows
+	 *  underneath. */
+	numeral?: string;
+	numeralSize?: number;
 };
 
 export const COVER_SHADOW =
@@ -122,6 +129,25 @@ export const HookTitle: React.FC<{hook: Hook; shadow?: string}> = ({
 					}}
 				/>
 			) : null}
+			{cover && hook.numeral ? (
+				<div
+					style={{
+						position: 'absolute',
+						left: 64,
+						top: 300,
+						fontFamily: FACE.sans,
+						fontSize: hook.numeralSize ?? 220,
+						fontWeight: 700,
+						letterSpacing: '-0.06em',
+						lineHeight: 1,
+						color: REEL.blush,
+						textShadow: ink,
+						opacity: alpha,
+					}}
+				>
+					{hook.numeral}
+				</div>
+			) : null}
 			<div
 				style={{
 					position: 'absolute',
@@ -130,8 +156,9 @@ export const HookTitle: React.FC<{hook: Hook; shadow?: string}> = ({
 					// y ~187-231: the feed fills the screen height, so canvas y maps ~1:1.
 					// A hook at 190 prints underneath those icons — on a live post the
 					// camera icon landed straight through a headline word. 300 clears the
-					// row plus padding for a taller status bar.
-					top: 300,
+					// row plus padding for a taller status bar. With a numeral the
+					// headline follows it (cover geometry, shifted down as a block).
+					top: cover && hook.numeral ? 300 + (hook.numeralSize ?? 220) * 0.92 + 20 : 300,
 					width: SAFE_W,
 					textAlign: cover ? 'left' : 'center',
 					opacity: alpha,
@@ -225,7 +252,7 @@ export const GroupCaptions: React.FC<{
 	 *  off. (The reference uses outlined white; navy-on-parchment is the same
 	 *  move in this system.) First matching range wins. */
 	inks?: {s: number; e: number; color: string; tint?: string; shadow?: string}[];
-}> = ({groups, top = BAND.caption, suppress = [], shadow, size = 58, tops = [], inks = []}) => {
+}> = ({groups, top = BAND.caption, suppress = [], shadow, size = 68, tops = [], inks = []}) => {
 	const frame = useCurrentFrame();
 	if (inAny(frame, suppress)) return null;
 
@@ -404,8 +431,23 @@ export const EmphasisBuild: React.FC<{group: EmphasisBuildGroup; shadow?: string
 		<>
 			{group.lines.map((l) => {
 				if (frame < l.at) return null;
-				const big = l.bigSize ?? 132;
-				const small = l.smallSize ?? 58;
+				// Fit the whole line inside the safe zone — long payoffs ran off the
+				// right edge. Measure every segment at its nominal size and scale
+				// the line down uniformly if it overflows.
+				let big = l.bigSize ?? 132;
+				let small = l.smallSize ?? 58;
+				const maxW = SAFE_W - l.x;
+				const natural =
+					l.segments.reduce(
+						(w, s) => w + measure(s.text, s.big ? big : small, FACE.sans, s.big ? 700 : 600, s.big ? -0.04 : -0.01),
+						0,
+					) +
+					14 * (l.segments.length - 1);
+				if (natural > maxW) {
+					const k = maxW / natural;
+					big = Math.floor(big * k);
+					small = Math.floor(small * k);
+				}
 				return (
 					<div
 						key={`${l.at}-${l.y}`}

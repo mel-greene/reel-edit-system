@@ -1,6 +1,7 @@
 node_modules/
 out/
 .DS_Store
+.last-synced-source-hash
 
 # Bring-your-own assets — never commit licensed material
 public/footage.mp4
