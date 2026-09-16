@@ -274,7 +274,11 @@ on the first line (frames 4–18, then never again); no type-on. Pair it with a
 end. The card is the proof; the reference holds hers ~10s.
 
 ### Logo pops — the section markers
-Brand mark + name in the wall space (y ~430), landing with a 6f back-eased
+**Icon only, never the word.** The brand mark alone in the wall space
+(y ~420, `iconH` 150), landing with a 6f back-eased scale pop and a `pop` SFX
+as the speaker names the tool; gone before that section's card arrives. When
+several tools are named in one breath the marks land ONE AT A TIME in a row
+(`dx` ±240), each on its spoken frame.
 scale pop and a `pop` SFX as the company is named; gone before that section's
 card arrives. **Section pops are CENTRED in the wall space** — a lone mark at
 the left margin with nothing above it reads as randomly placed. `align: 'left'`
