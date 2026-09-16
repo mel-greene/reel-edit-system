@@ -633,6 +633,10 @@ export type LogoChip = {
 	/** v5: align the chip with the lockup. A centred mark under a
 	 *  left-aligned hook reads as a mistake. */
 	align?: 'center' | 'left';
+	/** Horizontal nudge from the centred position, px — for a ROW of marks
+	 *  that land one at a time beside each other when several tools are named
+	 *  in one breath (icons only, no labels). */
+	dx?: number;
 	y: number;
 	start: number;
 	end: number;
@@ -668,7 +672,7 @@ export const LogoPop: React.FC<{chip: LogoChip; shadow?: string}> = ({
 				justifyContent: chip.align === 'left' ? 'flex-start' : 'center',
 				gap: 22,
 				opacity: Math.min(t * 2, 1) * out,
-				transform: `scale(${0.7 + t * 0.3})`,
+				transform: `translateX(${chip.dx ?? 0}px) scale(${0.7 + t * 0.3})`,
 				transformOrigin: 'center',
 			}}
 		>
@@ -679,7 +683,9 @@ export const LogoPop: React.FC<{chip: LogoChip; shadow?: string}> = ({
 					src={staticFile(chip.icon)}
 					style={{
 						height: chip.iconH ?? 84,
-						filter: 'drop-shadow(0 4px 14px rgba(0,0,0,0.45))',
+						// Icon-only marks need the deeper stack: on a warm wall a
+						// flat mark sits at the paint's lightness and floats.
+						filter: 'drop-shadow(0 10px 28px rgba(0,0,0,0.55)) drop-shadow(0 0 18px rgba(0,0,0,0.35)) drop-shadow(0 2px 4px rgba(0,0,0,0.5))',
 					}}
 				/>
 			) : null}

@@ -195,16 +195,29 @@ the CTA.
 - Ordinals stay stripped — the logo pop says the section once.
 
 ### Emphasis groups — loud
-**The tightened cluster is the standard.** Three word-timed lines set with
-`EmphasisBuild`: setup small (56px) at y ~452, payoff big (88–126px, sized to
-fit the safe width — the kit scales an overflowing line down) at y ~516, tail
-small at y ≈ 516 + payoff·0.92 + 18. Left offsets varied per line so nothing
-stacks centred. The older 66 / 150 / 66 block with 75 and 146px gaps is
-retired.
+**The pop-up form — read in a glance as one unit.** Word-timed lines set with
+`EmphasisBuild`:
+- **Sentence case on the big word.** Lowercase ascenders and descenders knit
+  the lines together; all caps leaves dead air above and below the word and
+  reads as shouting. (Caps payoffs are retired.)
+- **Companions 56px/600, parchment; payoff 104–118px/700, rose** — sized so it
+  fits the safe width without shrinking (the kit scales an overflowing line
+  down; if it has to, the payoff is too long, ~14 characters).
+- **Setup at y 452, payoff at y 514** (about 20px between the setup's baseline
+  and the big word's cap height); **tail tucked under the payoff's baseline:
+  y = 514 + 0.86·payoff + 6** (about 8px of air). Gaps stay smaller than the
+  small type's x-height so the eye takes the block as one sentence.
+- **A companion sits inline with the big word when they fit the safe width**
+  — a couple of times per reel, so it stays a texture, not a template.
+- **Left offsets varied per line (x ~90–300)**, block in the wall space from
+  y 452, never on the speaker's face.
+The earlier "tightened cluster" (`516 + 0.92·payoff + 18`, caps payoffs) is
+retired, as is the older 66 / 150 / 66 `EmphasisGroup` block.
 - Each line lands on its spoken frame (the big word with the one sanctioned
   back-eased scale pop and a `pop` SFX; small lines fade in silently);
-  accumulate, hold, clear together.
-- 4–6 per video, on the sentences carrying the argument.
+  accumulate, hold, clear together on a 4f fade.
+- 4–6 per video, on the sentences carrying the argument — each one states the
+  WIN of that update (see the meaning rule under captions).
 - One face throughout — never split a spoken sentence across faces.
 
 **Plain statements, never slogans.** The three lines are one sentence about
@@ -278,9 +291,11 @@ end. The card is the proof; the reference holds hers ~10s.
 (y ~420, `iconH` 150), landing with a 6f back-eased scale pop and a `pop` SFX
 as the speaker names the tool; gone before that section's card arrives. When
 several tools are named in one breath the marks land ONE AT A TIME in a row
-(`dx` ±240), each on its spoken frame.
-scale pop and a `pop` SFX as the company is named; gone before that section's
-card arrives. **Section pops are CENTRED in the wall space** — a lone mark at
+(`dx` ±240), each on its spoken frame; a lone mark lands on `sparkle`, a row
+keeps a `pop` per icon. A wordmark is not a fallback for a known tool — source
+the mark. Marks carry the deep three-layer drop shadow (kit default): flat
+icons sit at a warm wall's lightness and float without it. No glow.
+**Section pops are CENTRED in the wall space** — a lone mark at
 the left margin with nothing above it reads as randomly placed. `align: 'left'`
 exists for ONE case: a mark that is part of the hook lockup and sits directly
 under it, where a centred mark under left-aligned type read as a mistake. Real marks only — from the brand's own assets if
@@ -343,7 +358,7 @@ back on screen the frame it ends.
 
 ## 6. Sound  (`src/kit/sfx.ts`)
 
-Three sounds in the whole system. Files are not bundled — drop your own into
+Four sounds in the whole system. Files are not bundled — drop your own into
 `public/sfx/` under these names. Treat the volumes as design decisions, tuned
 by ear against speech; judge any change by listening, not by meters.
 
@@ -355,7 +370,7 @@ by ear against speech; judge any change by listening, not by meters.
 | `click` | each recording card landing | 0.43 |
 
 Setup/tail lines land silently. No sound on plain footage cuts. Nothing
-per-word, no sparkle/ding/riser, no music bed baked in.
+per-word, no ding/riser, no music bed baked in.
 
 ---
 
@@ -442,6 +457,13 @@ a render that comes back.
 
 ## 10. Changelog
 
+- **Pop-up form.** Emphasis payoffs went sentence case (caps read as shouting
+  and left dead air around the word): companions 56 / payoff 104–118 in rose,
+  setup 452 / payoff 514, tail tucked at `514 + 0.86·size + 6`, a companion
+  inline when it fits. The earlier caps cluster (`0.92·size + 18`) is retired.
+- **Logo pops are icon only.** Grouped mentions land as a row, one mark at a
+  time (`LogoChip.dx`); lone marks land on a softer `sparkle`; marks carry a
+  deeper drop shadow so they don't float on a warm wall.
 - **Proof-sheet gate (§8).** Every text beat is rendered as a still and sent
   to the owner as contact sheets for sign-off BEFORE the MP4 renders — over
   the previous take if the footage is not in yet. On its first use the sheets
