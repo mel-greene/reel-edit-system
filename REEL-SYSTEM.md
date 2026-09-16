@@ -350,7 +350,8 @@ by ear against speech; judge any change by listening, not by meters.
 | Sound | Where | Volume |
 |---|---|---|
 | `whoosh` | the hook, once per reel | 0.37 |
-| `pop` | each emphasis payoff line, each logo pop | 0.40 |
+| `pop` | each emphasis payoff line, each end-card payoff line, each icon in a ROW of logo pops | 0.40 |
+| `sparkle` | a lone logo icon landing (softer than the pop; icons in a row keep the pop each) | 0.30 |
 | `click` | each recording card landing | 0.43 |
 
 Setup/tail lines land silently. No sound on plain footage cuts. Nothing
