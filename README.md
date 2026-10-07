@@ -17,14 +17,18 @@ nothing animates that isn't landing.
 
 ## What's in the box
 
-- **[REEL-SYSTEM.md](REEL-SYSTEM.md)** — the spec. Palette, faces, zones
-  (including measured Instagram UI safe zones), footage rules, every text
-  component, sound placements, a banned list, and the per-video prompt
-  format. Written to be read by an AI agent before it touches a composition.
+- **[REEL-SYSTEM.md](REEL-SYSTEM.md)** — the spec, and the only rulebook.
+  Palette, faces, zones (including measured Instagram UI safe zones), footage
+  rules, every text component, sound placements, a banned list, and the
+  per-video prompt format. Framework-neutral on purpose: no rule names a
+  component file. Written to be read by an AI agent before it touches a
+  composition.
+- **[KIT-MAP.md](KIT-MAP.md)** — how this repo implements the spec: which file
+  holds what, and which components are retired-but-kept.
 - **`src/kit/`** — the components that enforce it: cut footage with reframe
   schedules, the floating recording card, grouped hard-cut captions that dodge
-  overlays, centred-stagger emphasis groups, logo pops, meme pops, typed
-  asides, and the four sound placements.
+  overlays, word-timed emphasis builds, logo pops, the staggered end card, and
+  the four sound placements.
 - **`src/example/`** — a fully wired example composition + the data schema an
   agent fills in per video.
 
@@ -41,30 +45,32 @@ Then bring your own assets (none of these are bundled, for licensing reasons):
 |---|---|
 | `public/footage.mp4` | your 1080x1920 talking-head take |
 | `public/recordings/` | screen recordings / UI mockups (1080x1350 works best) |
-| `public/sfx/` | `whoosh.mp3`, `pop.mp3`, `click.mp3`, `typing.mp3` |
-| `public/memes/` | your approved reaction-clip library (short mp4s) |
+| `public/sfx/` | `whoosh.mp3`, `pop.mp3`, `sparkle.mp3`, `click.mp3` |
 | `public/logos/` | brand marks for logo pops |
-| `public/fonts/Aside.otf` | a licensed handwritten face for asides (optional) |
 
 Instrument Sans and DM Mono are bundled under the SIL OFL (licences in
-`public/fonts/`).
+`public/fonts/`). Only Instrument Sans goes on a reel — see §1.
 
 ## The workflow
 
-1. Get word-level caption timings:
+1. Get word-level caption timings — from the editor draft if the take was
+   already captioned there, otherwise
    `whisper-cli -m ggml-base.en.bin -f audio.wav -ml 1 -sow -oj`
 2. Write the per-video brief (REEL-SYSTEM.md §8) — footage, sections,
-   emphasis lines verbatim, asides.
-3. The agent reports back before building: logo list, proposed meme beats,
-   judgment calls. You sign off.
-4. It writes one data file (see `src/example/exampleData.ts`), renders, and
-   you review a small preview copy with untouched audio.
+   hook and end-card copy, emphasis lines verbatim.
+3. The agent reports back before building: logo list, judgment calls. You
+   sign off.
+4. It writes one data file (see `src/example/exampleData.ts`), sends you a
+   proof sheet of every text beat (§8), reads back every caption cell against
+   the audio (§4), then renders — and you review a small preview copy with
+   untouched audio.
 
 ## Why a written spec?
 
 Because taste doesn't survive being re-derived every video. The spec encodes
-decisions that were made once, with the reasoning attached — why the caption
-tint is `#E89090` and not the brand blush (invisible at 52px), why reframes
+decisions that were made once, with the reasoning attached — why `#E89090` is
+the one pink over footage and the paler blush is not (it vanishes at caption
+size and sits at hair luminance when it's big), why reframes
 below 1.2x are banned (they read as nothing), why the recording card never
 covers the speaker (the face is the retention mechanism). An agent that reads
 it produces the same edit language every time, and review notes amend the spec
