@@ -10,8 +10,8 @@ edit is a ~15-line brief; everything else — cuts, caption grouping, type
 sizes, placement, sound — is decided by the spec, not per video.
 
 **The one-line philosophy:** the speaker anchors every frame (off screen
-only inside a bounded product showcase), every cut lands together with an
-overlay change and a visible reframe, captions whisper, emphasis shouts,
+only inside a bounded product showcase), camera changes serve the spoken
+story independently of overlay timing, captions whisper, emphasis shouts,
 graphics live in the room with the speaker — not on top of them — and
 nothing animates that isn't landing.
 
@@ -62,8 +62,8 @@ Instrument Sans and DM Mono are bundled under the SIL OFL (licences in
    sign off.
 4. It writes one data file (see `src/example/exampleData.ts`), sends you a
    proof sheet of every text beat (§8), reads back every caption cell against
-   the audio (§4), then renders — and you review a small preview copy with
-   untouched audio.
+   the audio (§4), then renders ONE master, reviews the exact encoded file
+   itself, and only then makes the platform versions (§8).
 
 ## Why a written spec?
 

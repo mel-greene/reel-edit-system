@@ -32,9 +32,32 @@ ONE face (Instrument Sans) and ONE pink over footage (rose).
 
 Everything is expressed at 1080x1920, 30fps. Frame counts are frames.
 
-**The one-line philosophy:** the speaker is never off screen, every cut lands together
-with an overlay change and a visible reframe, captions whisper, emphasis
-shouts, and nothing animates that isn't landing.
+### Motion quality
+
+The motion rules below were loosened after a playable preview built this way
+was approved as the starting point for later videos. Brand, copy, caption and
+safe-area rules are unchanged:
+
+- Use smooth, purposeful transitions. Eased camera reframing and demo
+  entrances/exits are permitted; do not replace choppy jumps with no transitions.
+- Choose distinct motion behaviours for different ideas. A sequence of identical
+  scale-pop boxes is not sufficient. Use the story to choose a reveal, spread,
+  connection, draw or fold; reuse the implementation, not one episode's script.
+- Give logos and meaningful graphic states a readable hold before the next layer
+  covers them. Remove fleeting intermediate cards that communicate nothing.
+- Establish a real application window before zooming to the interaction. Keep
+  genuine scrolling and selections visible; retain any approved privacy masks.
+- Match sound to visible action. Typing, key-press, notification and
+  bass-impact sounds may join the whoosh/pop/click palette once approved by
+  ear. Do not apply a pop automatically to every graphic.
+- Provide a playable motion/audio proof. Stills support layout review; they do
+  not establish how entrances, exits, transitions or sound feel.
+
+**The one-line philosophy:** the speaker anchors every frame (off screen only
+inside a bounded product showcase), camera changes serve the spoken story
+independently of overlay timing, captions whisper, emphasis shouts, graphics
+live in the room with the speaker — not on top of them — and nothing animates
+that isn't landing.
 
 ---
 
@@ -113,7 +136,7 @@ TikTok post shows a collision.
 | Hook title | top **300**, **left-aligned at `LEFT`** (cover lockup) |
 | Recording card | x 60, y 300–881 (inside the visible area) |
 | Logo pops | y ~430, centred (left only when part of the hook lockup) |
-| Captions | 71% (y 1363) — under a card: y 915 |
+| Captions | 71% (y 1363), fixed through every overlay |
 | Emphasis groups | display band y ~450–700, centred ± dx |
 
 **Instagram is the default profile.** The numbers above are Instagram's; a
@@ -134,7 +157,7 @@ lower band. Use the `linkedin` profile on specs intended for LinkedIn:
 | Right action rail | x ~860+, y **1120–1710** |
 | Lower creator and post details | y ~1600+ — keep text overlays above this band |
 | Recording card | x 180, y 300, **720×436** |
-| Captions | y 1363; under a card: y 770 |
+| Captions | y 1363, fixed through every overlay |
 
 Fit framed photos and animated inserts to the 720px text-safe width on this
 profile. A full-screen illustrative insert stays an intentional full-screen
@@ -178,17 +201,22 @@ One continuous take, cut hard. No crossfades, zoom ramps, or speed ramps.
 A spec may trim the head of a take (`trimStart`) when the first seconds are
 dead air — the reel starts on the first spoken word.
 
-- **Real punch-ins**: tight 1.26–1.38, wide 1.0–1.1, alternating, cycled off a
-  metronome. Subtle reframes (1.1x) read as nothing — don't use them.
+- **Real punch-ins**: tight 1.26–1.38, wide 1.0–1.1, selected for the passage,
+  never cycled on a metronome or generated from overlay boundaries. Subtle
+  reframes (1.1x) read as nothing — don't use them.
   **Unless the take is a close-up**: wide is the frame as filmed, so when the
   speaker's face already fills it the standard ladder lands too close. Soften
   tight cuts to ~1.10–1.15 and the card/CTA push-down to dy 130 at 1.12.
   Decide from the proof sheet, per take.
-- **Every cut coincides with something**: a recording card arriving/leaving, a
-  logo landing, an emphasis beat, a section turn. A cut into dead air is the
-  thing that reads as unfinished.
-- **While a recording card is up** the footage reframes DOWN so the face sits
-  fully below the card, still visible, still reacting: `dy 240, fy 60,
+- **Camera timing is independent of overlays.** Choose changes at meaningful
+  spoken transitions or when the composition needs space. An arriving graphic
+  already attracts attention; do not add a punch-in on every entrance or exit.
+  Hold a suitable frame across consecutive inserts. Never create a 3–4 frame
+  return to another angle between adjacent overlays. Record the editorial
+  reason for each camera change.
+- **When an insert needs face clearance**, choose a frame that holds across
+  that passage; do not automatically reframe on every card boundary. The face
+  sits fully below the card, still visible, still reacting: `dy 240, fy 60,
   scale ≥ 1.22` (fy 60 makes the scale growth swallow the gap the translate
   opens above). **The speaker is never off screen** — except inside a §5
   DocTakeover, bounded there.
@@ -197,6 +225,14 @@ dead air — the reel starts on the first spoken word.
 ---
 
 ## 4. Text components
+
+### No small-print overlay copy
+Do not add small-print labels, footnotes, explanatory tags or secondary
+microcopy to reel graphics — labels such as "Workflow illustration" included.
+If a visual needs words to explain the spoken point, make those words part of
+the primary, readable graphic or the main emphasis copy. Keep the approved hook
+subhead, essential diagram labels, captions and the CTA; this rule removes
+decorative or qualifying tiny text, not the message.
 
 ### The cover lockup — the house treatment
 ONE text treatment carries the cover image AND the on-screen hook. Using the
@@ -239,6 +275,15 @@ already talking, captions running underneath. It never sits on top of a
 recording — the first card waits for it to leave. No numeral takeover in the
 reel; the logo pops mark the sections.
 
+**Opening video scrim:** hold the broad dark scrim for about the first second
+of the hook, then fade it completely over the next 1.5 seconds. At 30fps, start
+with 30 hold frames and 45 fade frames, so the footage is clear by about 2.5
+seconds; it must clear by 3 seconds. The hook text keeps its usual readable
+hold — its exit and the scrim's exit are separate. Proof the text over the
+clear footage at phone size, especially the rose subhead; if it loses contrast,
+adjust its local shadow, placement or exit instead of extending the broad
+scrim. The still cover keeps its full scrim.
+
 **The hook collage** (v4): while the hook holds, 2–4 `FloatingCard`s of the
 speaker's actual products/covers pop into the wall space BEHIND the speaker
 (§2b), landing 2–3f apart with one `click`. It is the visual promise of the
@@ -259,10 +304,10 @@ this read; they never establish that a transcript matches the audio.
   take was already captioned in an editor, use that draft's word timings rather
   than re-transcribing it; otherwise run whisper.cpp over the exact audio.
   Hard cut in/out. No motion, ever.
-- **68px** / 600 (the kit default), parchment, centred, band at 71%.
-  **Under a card: y 915** (the gap between card bottom and the head). The
-  band is decided once per cell from its temporal midpoint — a cell spanning
-  an insert boundary never jumps bands mid-life.
+- **68px** / 600 (the kit default), parchment, centred, band at 71%
+  (y 1363). Captions stay at this bottom position through every overlay; they
+  do not move to make room for cards. A cell spanning an insert boundary never
+  jumps bands mid-life.
 - **Tint PHRASES, not single words** (v5). The tint spans the whole meaningful
   phrase — "WHAT'S CHANGED SINCE FRIDAY", "WHO'S WAITING ON YOU" — and runs
   across cell boundaries where the phrase does, so a cell is usually tinted
@@ -275,8 +320,9 @@ this read; they never establish that a transcript matches the audio.
   happens to land on the interval. Most cells have none; more than about one
   tint per 6–8s means the selection is too loose — that number is a ceiling,
   not a target. Lines owned by an emphasis group or the CTA card get no tint.
-- Captions run under the hook and the cards; they yield only to emphasis
-  groups and the CTA.
+- Captions remain at the bottom whenever the speaker is talking, including
+  while the hook, images, cards, emphasis groups or the CTA are on screen. No
+  overlay changes their position. Captions leave only during silence.
 - Ordinals stay stripped — the logo pop says the section once.
 
 ### Emphasis groups — loud
@@ -338,8 +384,8 @@ spoken frame with a `pop` on the big word only. WORDS land one at a time
 lands with a small back-eased scale pop — the one sanctioned text motion.
 The group is ONE compact cluster: companions nested against the big word,
 next line's top ≈ the previous line's size below it. Verb groups REPLACE
-each other (Research clears before Find lands), companion lines can drop
-into the caption band. Position each group's lines at varied x so nothing
+each other (Research clears before Find lands), companion lines stay clear
+of the fixed caption band. Position each group's lines at varied x so nothing
 stacks centred. One build sequence per reel may sit behind the speaker
 (§2b).
 
@@ -444,6 +490,12 @@ rotation. `paper` mat (white, stacked-sheet shadow) for files/covers, `photo`
 for prints, `plain` for UI crops. The Mac `cursor` prop is the "I dragged
 this in" wink — use it on files, not photos.
 
+**Fit the frame to the content.** The landscape card is for landscape UI. A
+document recording gets a frame matching its source aspect ratio, with no
+empty white extension, clipped heading, or unnecessary mat. Inspect the
+beginning, middle and end of scrolling documents. The brand fixes fonts,
+colours and safety zones; it does not require every asset to use one box.
+
 **The card** (`ScreenInserts`) — unchanged from v3: x 60, top 300, 960x581,
 radius 24, soft shadow, hard cut in with a `click`. No blur behind, no dim,
 no drift. Source mockups are 1080x1350; the crop window pans
@@ -452,8 +504,8 @@ Trim first, `rate` second, never above 1.5; running timers stay at 1.
 
 **TopTakeover** — full-WIDTH strip from y 0 down to ~870 (45%), hard
 straight bottom edge, no card chrome. The speaker reframes down underneath
-(`dy`) and the caption band drops to just under the edge
-(`captionUnderTop`). For surfaces that want width: boards, feeds, template
+(`dy`). Captions remain pinned at y 1363 through this and every other
+overlay; they do not move under the strip. For surfaces that want width: boards, feeds, template
 grids.
 
 **DocTakeover** — full-frame product showcase: pages of the actual
@@ -510,33 +562,71 @@ restraint. Give each placement the file's own duration.
 - Any face but Instrument Sans on a reel (the mono face is for other surfaces)
 - An SFX cut off before its file ends
 - Hooks that take over the frame, or sit on top of a recording
+- Small-print labels, footnotes or qualifying microcopy on graphics
+- A punch-in on every overlay entrance/exit; 3–4 frame angle returns between
+  adjacent overlays
+- Captions that move to dodge an overlay
 - Unapproved SFX, per-word sounds, processed audio
 
 ---
 
-## 8. Per-video prompt
+## 8. Production and review
 
-### Fast lane: one consolidated review
+The project's own runbook implements this section. Retired proposals, old
+skills, saved notes and old reel specs cannot supply production defaults.
 
-For a fast-lane job, the agent may assemble the proposed overlay copy, source
-or capture the supporting visuals, generate the complete proof sheets AND
-render a draft MP4 before the owner reviews anything — one consolidated review
-in place of the two separate gates described below. The owner still supplies
-the hook and the end-card copy. In exchange the agent reviews the captions,
-the sources, every proof beat, the motion and the audio itself before
-presenting the draft, the cover and the sheets together. The delivery render
-follows the owner's approval of that revision, and any later change means
-re-reviewing the evidence that changed — an explicit authorization for a
-specific correction still stands.
+**Default sequence: visual proofs and playable sound options → the owner's
+proof approval → ONE master video → agent review of the exact encoded master →
+requested platform versions.** The review receipt belongs to the actual
+revision and output. Still approval never authorizes all destination exports.
+A combined draft/proof review requires the owner's explicit instruction for
+that job. Keep already granted approvals for unchanged work; changes
+invalidate the affected receipts.
 
-Gathering screenshots, official marks and product imagery, and recording the
-real app demonstrations, are production tasks inside the fast-lane budget.
-Reuse suitable current assets, and keep the source masters so a new crop or
-trim never means recording again. An explicitly approved product showcase may
-cover the speaker temporarily; accidental obstruction is still a bug. The
-separate-approval workflow below stays available for jobs that want it.
+Capture all required content independently of the composition. Preserve demos,
+spreadsheets, PDFs, emphasis text, real websites, characters, chosen sounds,
+privacy edits and their minimum readable holds across revisions. Record the
+exact hook / subhead / CTA copy, colours and platform requirements. Removing
+or changing a requirement needs the owner's actual instruction, never a quiet
+change to make a validator pass. The agent handles sourcing, capture and
+organization.
 
-### Original workflow with separate approvals
+Watch supplied creative references before claiming to follow them. Save
+observations and evidence of their actual scale, crop, layering, timing and
+movement; demonstrate a new treatment on the speaker's own footage before full
+assembly. Keep the brand foundation while using those techniques. Technical
+compliance alone cannot establish professional visual quality.
+
+The agent reviews the exact encoded master, reads every caption, inspects all
+boundaries and checks each destination's visible area before presenting it.
+Continuous start-to-finish playback is not required; the agent may record
+approval after documented targeted visual checks and concrete audio checks.
+Record only the visual and audible ranges actually checked — never infer full
+playback from stills or scans, and never mark work performed on the strength
+of a generic assurance. Unverified platform assumptions remain open findings;
+material open findings block delivery. A current master review receipt is
+required before destination renders, and those adaptations keep its story and
+required content.
+
+Every new reel uses explicitly motivated camera cuts and its own build folder
+— no overlay-driven camera ladder, no shared build destination, no generic
+upload filenames, no unguarded render shortcuts. Use short playback and
+changed proofs to resolve corrections before another full master. Preserve
+source masters and reuse unchanged work. After approval, copy the approved
+high-quality master bytes rather than re-rendering them.
+
+Export names carry the creator's name, a descriptive topic, the destination,
+dimensions and revision. Deliver the matching platform caption and cover.
+Delivery is separate from social publication. Check your reusable media library
+before sourcing anything new, and record inspected useful ranges, provenance,
+scope and reuse history.
+
+Measure total elapsed time, sourcing, assembly, review and correction/render
+rounds, and the owner's active time when known. Don't count waiting as the
+owner's active time, and don't claim a turnaround target is proven by tool
+tests — a real production run has to demonstrate it.
+
+### The per-video brief
 
 ```
 Build the reel for [DATE] following REEL-SYSTEM.md.
@@ -591,6 +681,23 @@ wins and the kit map is stale.
 
 ## 10. Changelog
 
+- **Motion quality update.** Smooth, purposeful transitions and eased
+  reframes are permitted; distinct motion per idea instead of identical
+  scale-pops; readable holds on logos and graphic states; sound matched to
+  visible action; a playable motion/audio proof alongside the stills.
+- **Opening video scrim (§4).** The broad hook scrim holds ~1s and fades over
+  1.5s so the footage is clear by ~2.5s (never later than 3s); the still cover
+  keeps its full scrim. **No small-print overlay copy** — tiny labels and
+  qualifying microcopy are removed, not the message.
+- **Camera timing independent of overlays (§3).** Cuts are chosen at spoken
+  transitions or when the composition needs space, never generated from
+  overlay boundaries; each change has a recorded editorial reason. Captions
+  stay fixed at y 1363 through every overlay. Insert frames fit the content's
+  own aspect ratio (§5).
+- **Production and review (§8).** Proof-first by default, one approved master
+  before platform variants, an independent record of required content, a
+  recorded review of the exact encoded master, descriptive exports and a
+  reusable media library. The fast-lane consolidated review is retired.
 - **LinkedIn mobile safe-zone profile (§2).** Measured from a 588×1280 capture:
   tighter side crop, an action rail that reaches into Instagram's text zone,
   and a lower creator/post-details band. Instagram stays the default profile.
@@ -599,10 +706,8 @@ wins and the kit map is stale.
   deliverable-only restriction on full-frame inserts — an intentional
   presentation, not an accidental card over the face. Caption rules are
   unchanged: selecting a visual reference does not approve its captions.
-- **Fast lane: one consolidated review (§8).** Copy, visuals, proof sheets and
-  a draft MP4 can all be assembled before a single owner review, replacing the
-  two separate gates — in exchange the agent reviews captions, sources, every
-  proof beat, motion and audio before presenting anything.
+- **Fast lane: one consolidated review (§8)** — since retired. Copy, visuals,
+  proof sheets and a draft MP4 were assembled before a single owner review.
 - **Standalone hook numerals are for count-led titles only.** A percentage or
   statistic inside a supplied hook does not get its own numeral; with no
   numeral the headline itself starts at y 300.
